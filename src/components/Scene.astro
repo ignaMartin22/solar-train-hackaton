@@ -1,0 +1,21 @@
+---
+// Sticky 3D viewport: canvas, station board and camera HUD overlays.
+// Everything here is driven by src/scripts/main.js.
+---
+
+<div class="stage-sticky">
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <aside class="board" aria-label="Estado del tren">
+    <h2><span>ANDÉN 1</span><span><span id="clock">--:--</span>&nbsp;<span id="tod"></span></span></h2>
+    <div class="row"><span class="k">SERVICIO</span><span class="v">TREN SOLAR</span></div>
+    <div class="row"><span class="k">PRÓXIMA</span><span class="v" id="next">PRE-HACKATÓN</span></div>
+    <div class="row"><span class="k">ENERGÍA</span><span class="v">100% SOLAR</span></div>
+    <div class="row"><span class="k">COORD</span><span class="v">23°12′S · 65°21′O</span></div>
+    <div class="row"><span class="k">VELOCIDAD</span><span class="v speed" id="speed">0 km/h</span></div>
+    <div class="row"><span class="k">ESTADO</span><span class="v status" id="status"><b></b><span id="statusText">LLEGANDO</span></span></div>
+    <div class="bar"><i id="prog"></i></div>
+  </aside>
+  <div class="hud" id="hud" aria-hidden="true"><i></i><i></i><i></i><i></i><div class="ret"></div></div>
+  <div class="flash" id="flash" aria-hidden="true"></div>
+  <div class="cam" id="cam" aria-hidden="true"><b></b><span id="camText">CAM 01</span></div>
+</div>
