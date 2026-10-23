@@ -22,10 +22,10 @@ const route=document.getElementById('route');
 // WebGPU backdrop loads lazily, just before the section scrolls into view
 new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){import('./route-bg.js');o.disconnect();}},{rootMargin:'600px'}).observe(route);
 if('IntersectionObserver' in window){
-  new IntersectionObserver((en,o)=>{en.forEach(x=>{if(x.isIntersecting){route.classList.add('on');o.disconnect();}})},{threshold:.35}).observe(route);
+  new IntersectionObserver((en,o)=>{en.forEach(x=>{if(x.isIntersecting){route.classList.add('on');o.disconnect();}})},{threshold:.05}).observe(route);
   const co=new IntersectionObserver(en=>en.forEach(x=>x.target.classList.toggle('in',x.isIntersecting)),{threshold:.3});
-  document.querySelectorAll('.card,.big').forEach(c=>co.observe(c));
-}else{route.classList.add('on');document.querySelectorAll('.card,.big').forEach(c=>c.classList.add('in'));}
+  document.querySelectorAll('.card,.big,.route-head').forEach(c=>co.observe(c));
+}else{route.classList.add('on');document.querySelectorAll('.card,.big,.route-head').forEach(c=>c.classList.add('in'));}
 
 /* ---------- 3D scene ---------- */
 (function(){
@@ -56,13 +56,135 @@ if('IntersectionObserver' in window){
   Object.assign(key.shadow.camera,{left:-36,right:36,top:24,bottom:-24,near:1,far:130});
   scene.add(key);
 
-  const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.5,metalness:.1},o));
-  const white=M(0xf2efe9,{roughness:.32,metalness:.15});
-  const orange=M(0xff5a1f,{roughness:.4,emissive:0x3a0d00});
-  const glass=M(0x0d1119,{roughness:.08,metalness:.8});
-  const dark=M(0x14171d,{roughness:.7});
-  const panel=M(0x1d2c48,{roughness:.2,metalness:.7,emissive:0x050a18});
-  const steel=M(0x9a9da3,{metalness:.9,roughness:.25});
+  /* soft reflections without an external HDR: a tiny procedural env (night-sky dome
+     with a warm horizon band + three light cards) baked through PMREM */
+  {
+    const env=new THREE.Scene();
+    const dg=new THREE.SphereGeometry(50,32,16);
+    const dcol=new Float32Array(dg.attributes.position.count*3);
+    const nv=new THREE.Vector3(),hue=new THREE.Color(),top=new THREE.Color(0x0a1122),hor=new THREE.Color(0xc9502a),low=new THREE.Color(0x0b0e13);
+    for(let i=0;i<dg.attributes.position.count;i++){
+      nv.fromBufferAttribute(dg.attributes.position,i).normalize();
+      hue.copy(nv.y>0?top:low).lerp(hor,Math.pow(1-Math.abs(nv.y),4));
+      dcol.set([hue.r,hue.g,hue.b],i*3);
+    }
+    dg.setAttribute('color',new THREE.BufferAttribute(dcol,3));
+    env.add(new THREE.Mesh(dg,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide})));
+    const card=(w,h,c,i2,x,y,z)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c}));m.material.color.multiplyScalar(i2);m.position.set(x,y,z);m.lookAt(0,0,0);env.add(m);};
+    card(30,12,0xff8a4c,3.0,0,5,-42);    // warm sunset band ahead of the train
+    card(24,10,0x9cc4e2,1.7,-30,26,-20); // cool sky softbox
+    card(18,9,0xfff0d8,2.4,26,30,18);    // warm key overhead
+    const pm=new THREE.PMREMGenerator(renderer);
+    scene.environment=pm.fromScene(env).texture;
+    pm.dispose();
+  }
+
+  const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.5,metalness:.1,envMapIntensity:.3},o));
+  const white=M(0xf2efe9,{roughness:.34,metalness:.14,envMapIntensity:.62});
+  const orange=M(0xff5a1f,{roughness:.42,emissive:0x3a0d00,envMapIntensity:.5});
+  const glass=M(0x0d1119,{roughness:.07,metalness:.85,envMapIntensity:1.6});
+  const dark=M(0x14171d,{roughness:.7,envMapIntensity:.35});
+  const steel=M(0x9a9da3,{metalness:.9,roughness:.25,envMapIntensity:.8});
+  /* solar roof: dark navy cells with a faint grid, shared across every panel */
+  const cellTex=(()=>{
+    const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');
+    x.fillStyle='#12203c';x.fillRect(0,0,256,128);
+    x.fillStyle='#0e1a30';for(let j=0;j<4;j++)for(let i=0;i<8;i++)if((i+j)%2)x.fillRect(i*32+2,j*32+2,28,28);
+    x.strokeStyle='rgba(150,180,225,.4)';x.lineWidth=2;x.beginPath();
+    for(let i=0;i<=8;i++){x.moveTo(i*32,0);x.lineTo(i*32,128);}
+    for(let j=0;j<=4;j++){x.moveTo(0,j*32);x.lineTo(256,j*32);}
+    x.stroke();
+    const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t;
+  })();
+  const panel=M(0xffffff,{map:cellTex,roughness:.26,metalness:.6,envMapIntensity:1,emissive:0x050a18});
+  /* hazard chevrons for the nose plow */
+  const chevTex=(()=>{
+    const c=document.createElement('canvas');c.width=128;c.height=64;const x=c.getContext('2d');
+    x.fillStyle='#f4f0ea';x.fillRect(0,0,128,64);x.fillStyle='#ff5a1f';
+    for(let i=-2;i<8;i++){x.beginPath();x.moveTo(i*24,64);x.lineTo(i*24+24,0);x.lineTo(i*24+40,0);x.lineTo(i*24+16,64);x.closePath();x.fill();}
+    const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.wrapS=THREE.RepeatWrapping;return t;
+  })();
+  const plowMat=M(0xffffff,{map:chevTex,roughness:.55,envMapIntensity:.4});
+  const equip=M(0x20252e,{roughness:.55,metalness:.35,envMapIntensity:.45});
+  /* cabin glazing is semi-transparent so the lit interior reads through it */
+  const winMat=new THREE.MeshStandardMaterial({color:0x14202e,roughness:.06,metalness:.8,envMapIntensity:1.5,transparent:true,opacity:.3});
+  const innerMat=new THREE.MeshBasicMaterial({color:0xffc990,side:THREE.BackSide});
+  const innerBase=new THREE.Color(0xffc990);
+  const scrBase=new THREE.Color(0x9fc8e8);
+  const scrMat=new THREE.MeshBasicMaterial({color:0x9fc8e8,side:THREE.DoubleSide});
+  /* riders: low-poly hackers behind the glass. Every box-shaped part (seats,
+     torsos, limbs, laptops, window mullions) goes into one InstancedMesh per
+     car, heads/hair/hands into a second, lit screens into a third — a full car
+     of passengers costs three draw calls */
+  const paxBox=new THREE.BoxGeometry(1,1,1),paxBall=new THREE.SphereGeometry(1,14,10),paxScr=new THREE.PlaneGeometry(1,1);
+  const paxMat=M(0xffffff,{roughness:.8,metalness:.02,envMapIntensity:.45,emissive:0x120a05}); // faint warm lift = cabin light on the fabric
+  const SEAT=0x39404e,FRAME=0x1d232d,DECK=0x161b22;
+  const SKIN=[0x8a5a3c,0xb57a52,0xd9a276,0x6e4530,0xe2b48e];
+  const CLOTH=[0x31435c,0x6b3a2c,0x40573a,0xcfc8ba,0xff5a1f,0x51304e,0x274050];
+  const HAIR=[0x191411,0x3a2417,0x6e4a28,0x8f949c,0x241c22];
+  const PANTS=[0x1c222e,0x2e2a26,0x39404e];
+  const SCRN=[0x9fc8e8,0x86b4d8,0xbcd9ee,0x8fd0c0,0xe8c890];
+  function riders(g,carIdx,panes){
+    const B=[],S=[],C=[];
+    const D=new THREE.Object3D();D.rotation.order='YXZ';
+    const Q=new THREE.Quaternion(),VY=new THREE.Vector3(0,1,0),PA=new THREE.Vector3(),PB=new THREE.Vector3(),PD=new THREE.Vector3();
+    const put=(arr,c,x,y,z,sx,sy,sz,rx,ry,rz)=>{
+      D.position.set(x,y,z);D.rotation.set(rx||0,ry||0,rz||0);D.scale.set(sx,sy,sz);D.updateMatrix();
+      arr.push([D.matrix.clone(),c]);
+    };
+    const limb=(c,ax,ay,az,bx,by,bz,th)=>{ // a box stretched between two joints
+      PA.set(ax,ay,az);PB.set(bx,by,bz);PD.subVectors(PB,PA);const L=PD.length();
+      D.position.copy(PA).add(PB).multiplyScalar(.5);
+      D.quaternion.copy(Q.setFromUnitVectors(VY,PD.normalize()));D.scale.set(th,L,th);D.updateMatrix();
+      B.push([D.matrix.clone(),c]);
+    };
+    // dark mullions + rails frame the panoramic band — the bare through-hole reads as a glow gap otherwise
+    [-1,1].forEach(s=>{const mz=s*(W/2-.015);
+      put(B,FRAME,(.92+LEN-.32)/2,1.545,mz,LEN-1.24,.05,.06);
+      put(B,FRAME,(.92+LEN-.32)/2,2.475,mz,LEN-1.24,.05,.06);
+      panes.forEach(([a,b])=>{put(B,FRAME,a-.02,2.01,mz,.07,.98,.06);put(B,FRAME,b+.02,2.01,mz,.07,.98,.06);});
+    });
+    panes.forEach(([a,b],i)=>{[-1,1].forEach(s=>{
+      if((i+(s>0?0:1))%2)return; // alternating bays stay occupied, doors stay clear
+      const h=n=>hash((i+1)*7.13+s*3.7+carIdx*11.9+n*31.7,.5);
+      const x=(a+b)/2+(h(0)-.5)*.24,z=s*(W/2-.52),f=s>0?1:-1; // +z row rides facing forward, −z backward
+      const hg=.93+h(1)*.11;
+      const skin=SKIN[(h(2)*SKIN.length)|0],cloth=CLOTH[(h(3)*CLOTH.length)|0];
+      const hairC=HAIR[(h(4)*HAIR.length)|0],pants=PANTS[(h(5)*PANTS.length)|0];
+      const gaze=h(6)<.28,lean=(gaze?.04:.05+h(7)*.12)*f;
+      const hipY=1.35,shY=hipY+.55*hg,nkY=shY+.05,hdY=nkY+.14,sx=x+lean*.6;
+      put(B,SEAT,x-f*.06,1.12,z,.6,.1,.54);                                 // seat cushion
+      put(B,SEAT,x-f*.33,1.36,z,.08,.62,.58);                               // backrest peeks over the sill
+      put(B,pants,x+f*.1,1.02,z,.34,.4,.34);                                // shins below the sill line
+      put(B,pants,x+f*.01,1.31,z,.44,.14,.4);                               // lap
+      put(B,cloth,x,(hipY+shY)/2+.02,z,.3,.56*hg+.1,.42*hg,0,0,-lean);      // torso
+      put(B,cloth,sx,shY-.01,z,.24,.1,.44*hg);                              // shoulder line
+      put(B,skin,sx,nkY-.02,z,.1,.1,.1);                                    // neck
+      const yaw=gaze?-s*f*.75:(h(8)-.5)*.3,pitch=(gaze?.02:.16)*f; // coders nod at the screen
+      put(S,skin,sx+f*.04,hdY,z,.145*hg,.165*hg,.14*hg,0,yaw,-pitch);       // head
+      put(S,hairC,sx+f*.01,hdY+.05,z,.15*hg,.125*hg,.145*hg,0,yaw,-pitch);  // hair cap
+      const hs=h(8.5);
+      if(hs<.3)put(B,hairC,sx-f*.1,hdY-.12,z,.1,.3,.18);                    // long hair down the back
+      else if(hs<.45)put(S,hairC,sx-f*.11,hdY+.1,z,.065,.065,.065);         // bun
+      const shX=sx+f*.02;
+      if(gaze){ // chin on the window-side fist, watching the quebrada go by
+        limb(cloth,shX,shY-.03,z+s*.2*hg,x+f*.18,1.6,z+s*.16,.078*hg);
+        limb(skin,x+f*.18,1.6,z+s*.16,sx+f*.09,hdY-.16,z+s*.1,.06);
+        limb(cloth,shX,shY-.03,z-s*.2*hg,x+f*.14,1.58,z-s*.15,.078*hg);
+        limb(skin,x+f*.14,1.58,z-s*.15,x+f*.22,1.5,z-s*.06,.06);
+      }else{[-1,1].forEach(k=>{ // elbows out, both hands on the keyboard
+          limb(cloth,shX,shY-.03,z+k*.2*hg,x+f*.02,1.6,z+k*.18,.078*hg);
+          limb(cloth,x+f*.02,1.6,z+k*.18,x+f*.14,1.57,z+k*.06,.064*hg);
+          put(S,skin,x+f*.16,1.56,z+k*.04,.05,.045,.055);                   // hand
+        });
+        put(B,DECK,x+f*.21,1.52,z,.36,.03,.27,0,0,f*.05);                   // laptop held over the lap
+        put(C,SCRN[(h(9)*SCRN.length)|0],x+f*.36,1.74,z,.32,.22,1,-.34,-f*Math.PI/2,0); // screen faces the rider
+      }
+    });});
+    const mk=(geo,mat,arr)=>{if(!arr.length)return;const m=new THREE.InstancedMesh(geo,mat,arr.length),cl=new THREE.Color();
+      arr.forEach(([mt,c],i)=>{m.setMatrixAt(i,mt);m.setColorAt(i,cl.set(c));});m.frustumCulled=false;g.add(m);};
+    mk(paxBox,paxMat,B);mk(paxBall,paxMat,S);mk(paxScr,scrMat,C);
+  }
 
   /* sun + glow */
   const sun=new THREE.Mesh(new THREE.CircleGeometry(22,64),new THREE.MeshBasicMaterial({color:0xff7a3a,fog:false}));
@@ -168,63 +290,125 @@ if('IntersectionObserver' in window){
     g.position.z=2.9;g.userData.base=LOOP0+i*(LOOP/13);line.add(g);props.push(g);
   }
 
-  /* the train */
-  const W=2.5,LEN=9;
+  /* the train: two articulated cars, a driving cab on each outer end and a bellows
+     joining the inner ends — the real Tren Solar de la Quebrada */
+  const W=2.5,LEN=10.4,GAP=.6;
   function extrude(shape,depth,bevel){
-    const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:!!bevel,bevelSize:bevel||0,bevelThickness:bevel||0,bevelSegments:3,curveSegments:10});
+    const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:!!bevel,bevelSize:bevel||0,bevelThickness:bevel||0,bevelSegments:3,curveSegments:12});
     g.translate(0,0,-depth/2);return g;
   }
-  function carShape(nose){
+  function poly(pts){const s=new THREE.Shape();s.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)s.lineTo(pts[i][0],pts[i][1]);return s;}
+  /* side silhouette: sloped cab nose at x=0, flat inner end at x=LEN facing the bellows.
+     The panoramic band is a real through-hole, so the lit interior shows behind the glass */
+  function carShape(){
     const s=new THREE.Shape();
-    if(nose){
-      s.moveTo(.35,.55);s.lineTo(LEN,.55);s.lineTo(LEN,2.75);s.lineTo(2.6,2.75);
-      s.quadraticCurveTo(1.9,2.75,1.4,2.2);s.lineTo(.25,1.15);s.quadraticCurveTo(0,.85,.35,.55);
-    }else{
-      s.moveTo(.2,.55);s.lineTo(LEN-.2,.55);s.quadraticCurveTo(LEN,.55,LEN,.8);s.lineTo(LEN,2.5);s.quadraticCurveTo(LEN,2.75,LEN-.25,2.75);
-      s.lineTo(.25,2.75);s.quadraticCurveTo(0,2.75,0,2.5);s.lineTo(0,.8);s.quadraticCurveTo(0,.55,.2,.55);
-    }
+    s.moveTo(.34,.55);
+    s.lineTo(LEN-.06,.55);
+    s.quadraticCurveTo(LEN,.55,LEN,.62);
+    s.lineTo(LEN,2.7);
+    s.quadraticCurveTo(LEN,2.88,LEN-.16,2.88);
+    s.lineTo(1.72,2.88);
+    s.quadraticCurveTo(1.32,2.88,.95,2.62);  // roof rounds into the forehead
+    s.lineTo(.42,1.6);                       // long straight windshield rake
+    s.quadraticCurveTo(.26,1.32,.2,1.02);    // nose cone
+    s.quadraticCurveTo(.14,.72,.34,.55);     // chin
+    const win=new THREE.Path();
+    win.moveTo(.95,1.56);win.lineTo(LEN-.35,1.56);win.lineTo(LEN-.35,2.46);win.lineTo(.95,2.46);win.closePath();
+    s.holes.push(win);
     return s;
   }
-  function poly(pts){const s=new THREE.Shape();s.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)s.lineTo(pts[i][0],pts[i][1]);return s;}
+  /* mountain-silhouette stripe: a solid band whose top edge is a sawtooth of peaks */
+  function stripeShape(){
+    const s=new THREE.Shape();
+    s.moveTo(.55,.56);s.lineTo(LEN-.06,.56);s.lineTo(LEN-.06,.98);
+    const peaks=[[9.8,1.05],[9.05,1.32],[8.15,1.07],[7.3,1.42],[6.3,1.1],[5.25,1.5],[4.35,1.08],[3.5,1.4],[2.6,1.06],[1.8,1.3],[1.05,1.04]];
+    peaks.forEach(([p,h])=>{s.lineTo(p+.48,.98);s.lineTo(p,h);s.lineTo(p-.48,.98);});
+    s.lineTo(.55,.98);s.closePath();
+    return s;
+  }
   const train=new THREE.Group();line.add(train);
   const wheels=[],beams=[];
-  const winGlow=new THREE.MeshBasicMaterial({color:0xffc58f});
-  function car(i,nose,tail){
-    const g=new THREE.Group();g.position.x=i*(LEN+.35);
-    if(tail){g.scale.x=-1;g.position.x+=LEN;}
-    const body=new THREE.Mesh(extrude(carShape(nose),W-.16,.08),white);body.castShadow=true;g.add(body);
-    g.add(new THREE.Mesh(extrude(poly(nose?[[.42,.62],[LEN,.62],[LEN,1.02],[.62,1.02]]:[[.05,.62],[LEN-.05,.62],[LEN-.05,1.02],[.05,1.02]]),W+.06),orange));
-    g.add(new THREE.Mesh(extrude(poly(nose?[[1.0,1.02],[3.6,1.02],[5.4,1.62],[4.6,1.62]]:[[5.6,1.02],[7.6,1.02],[8.9,1.5],[8.2,1.5]]),W+.06),orange));
-    g.add(new THREE.Mesh(extrude(poly(nose?[[2.9,1.62],[LEN-.4,1.62],[LEN-.4,2.28],[2.9,2.28]]:[[.45,1.62],[LEN-.45,1.62],[LEN-.45,2.28],[.45,2.28]]),W+.04),glass));
-    // warm interior lights: people working inside
-    for(let k=0;k<(nose?3:5);k++){
-      const px=(nose?3.6:.9)+k*1.6;
-      const l=new THREE.Mesh(new THREE.PlaneGeometry(.9,.12),winGlow);l.position.set(px+.45,2.18,W/2+.03);g.add(l);
-      const l2=l.clone();l2.position.z=-W/2-.03;l2.rotation.y=Math.PI;g.add(l2);
-    }
-    if(nose){
-      const ws=new THREE.Mesh(extrude(poly([[.6,1.5],[1.38,2.27],[2.0,2.6],[2.6,2.66],[2.6,1.5]]),W-.5),glass);ws.position.x=-.06;g.add(ws);
-      const hlMat=new THREE.MeshBasicMaterial({color:tail?0xff3b30:0xfff2d6});
-      [-.75,.75].forEach(z=>{const h=new THREE.Mesh(new THREE.BoxGeometry(.08,.14,.42),hlMat);h.position.set(.32,.86,z);h.rotation.z=.6;g.add(h);});
-      if(!tail){const beam=new THREE.SpotLight(0xffe2b8,2.2,45,.45,.6,1);beam.position.set(.2,.9,0);beam.target.position.set(-20,0,0);g.add(beam);g.add(beam.target);beams.push(beam);}
-    }
-    const pc=nose?4:5;
-    for(let k=0;k<pc;k++){
-      const px=(nose?3.3:.9)+k*1.55;
-      const p=new THREE.Mesh(new THREE.BoxGeometry(1.4,.06,W-.5),panel);p.position.set(px+.7,2.86,0);p.rotation.z=-.04;g.add(p);
-      const f=new THREE.Mesh(new THREE.BoxGeometry(1.44,.03,W-.46),orange);f.position.set(px+.7,2.82,0);g.add(f);
-    }
-    const skirt=new THREE.Mesh(new THREE.BoxGeometry(LEN-1.2,.3,W-.3),dark);skirt.position.set(LEN/2+.2,.45,0);g.add(skirt);
-    [1.9,LEN-1.7].forEach(bx=>{
-      const b=new THREE.Mesh(new THREE.BoxGeometry(2.2,.32,W-.5),dark);b.position.set(bx,.52,0);b.castShadow=true;g.add(b);
-      [-.6,.6].forEach(dx=>[-.78,.78].forEach(z=>{
-        const w=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.14,16),steel);w.rotation.x=Math.PI/2;w.position.set(bx+dx,.62,z);g.add(w);wheels.push(w);
+  const lampW=new THREE.MeshBasicMaterial({color:0xfff2d6,transparent:true});
+  const lampR=new THREE.MeshBasicMaterial({color:0xff3b30,transparent:true});
+  function box(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);return m;}
+  /* a slab tilted to lie on the cab's sloped face (front windshield, destination sign) */
+  function slant(w,h,d,mat,deg,x,y,z){const m=box(w,h,d,mat,x,y,z);m.rotation.z=THREE.MathUtils.degToRad(deg);return m;}
+
+  function car(tail){
+    const g=new THREE.Group();
+    if(tail)g.scale.x=-1; // mirrored: cab faces +x
+    const body=new THREE.Mesh(extrude(carShape(),W-.16,.08),white);body.castShadow=true;g.add(body);
+    g.add(new THREE.Mesh(extrude(stripeShape(),W+.04),orange)); // wraps onto the nose like the real paint
+
+    // lit cabin behind the glass: an inside-out warm shell + silhouettes of people coding
+    g.add(box(LEN-1,2.05,W-.85,innerMat,(1+LEN)/2,1.85,0));
+    const panes=[[1.12,1.9],[3.3,4.62],[4.88,6.2],[6.46,7.55],[9.05,10.16]];
+    panes.forEach(([a,b])=>{[-1,1].forEach(s=>{
+      g.add(box(b-a-.06,.9,.05,winMat,(a+b)/2,2.01,s*(W/2-.05)));
+    });});
+    riders(g,tail?1:0,panes);
+    // plug doors with orange frames, two per side per car
+    [[2.02,3.04],[7.72,8.74]].forEach(([a,b])=>{
+      [-1,1].forEach(s=>{
+        const d=new THREE.Group();d.position.z=s*(W/2+.015);
+        d.add(box(b-a,.9,.06,dark,(a+b)/2,1.13,0));      // solid leaf below the beltline
+        d.add(box(b-a-.2,.8,.07,winMat,(a+b)/2,1.98,0)); // door glass shows the cabin
+        [a+.06,b-.06].forEach(x=>d.add(box(.06,1.72,.08,orange,x,1.55,0)));
+        d.add(box(.05,1.72,.07,dark,(a+b)/2,1.55,0));
+        g.add(d);
+      });
+    });
+
+    // windshield slab on the sloped face + wraparound corner panes + parked wipers
+    g.add(slant(.95,.07,1.78,glass,62.5,.6,2.06,0));
+    [-1,1].forEach(s=>{
+      const p=box(.5,.82,.05,glass,.82,2.05,s*(W/2-.04));p.rotation.z=THREE.MathUtils.degToRad(27);g.add(p);
+      g.add(slant(.58,.032,.05,dark,73.5,.56,2.085,s*.44)); // wiper resting on the raked glass
+    });
+    // destination display riding just above the glass
+    g.add(slant(.3,.07,1.15,dark,62.5,.74,2.5,0));
+    const dt=slant(.14,.075,.55,new THREE.MeshBasicMaterial({color:0xff8a4c}),62.5,.7,2.51,0);g.add(dt);
+
+    // roof: dark tray, solar array, AC hump by the bellows, cab antenna fin
+    g.add(box(LEN-2.5,.05,W-.46,dark,(1.95+LEN-.4)/2,2.895,0));
+    for(let k=0;k<5;k++)g.add(box(1.42,.05,W-.6,panel,2.5+k*1.56,2.945,0));
+    g.add(box(1.0,.13,W-1.05,equip,LEN-1.25,2.97,0));
+    const fin=new THREE.Mesh(new THREE.ConeGeometry(.14,.46,4),dark);fin.position.set(1.55,3.08,0);fin.rotation.y=Math.PI/4;g.add(fin);
+
+    // headlight clusters on the nose
+    [-1,1].forEach(s=>{
+      const l1=new THREE.Mesh(new THREE.SphereGeometry(.1,12,8),tail?lampR:lampW);l1.position.set(.3,1.06,s*.8);g.add(l1);
+      const l2=new THREE.Mesh(new THREE.SphereGeometry(.06,10,6),tail?lampW:lampR);l2.position.set(.3,1.06,s*.95);g.add(l2);
+    });
+    if(!tail){const beam=new THREE.SpotLight(0xffe2b8,2.2,45,.45,.6,1);beam.position.set(.2,.95,0);beam.target.position.set(-20,0,0);g.add(beam);g.add(beam.target);beams.push(beam);}
+
+    // chevron plow + coupler under the nose
+    const plow=slant(.55,.08,1.6,plowMat,16,.24,.72,0);g.add(plow);
+    g.add(box(.4,.28,.5,dark,.34,.48,0));
+
+    // underfloor cover + two bogies
+    g.add(box(LEN-1.7,.3,W-.4,dark,LEN/2+.45,.44,0));
+    [2.7,LEN-1.9].forEach(bx=>{
+      const b=box(2.4,.34,W-.6,dark,bx,.52,0);b.castShadow=true;g.add(b);
+      g.add(box(2.7,.09,W-.68,dark,bx,.34,0));
+      [-.68,.68].forEach(dx=>[-.8,.8].forEach(z=>{
+        const w=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,.15,18),steel);
+        w.rotation.x=Math.PI/2;w.position.set(bx+dx,.58,z);g.add(w);wheels.push(w);
       }));
     });
     train.add(g);
+    return g;
   }
-  car(0,true);car(1,false);car(2,true,true);
-  const TRAIN_MID=13.5;
+  car(false);
+  const c1=car(true);c1.position.x=2*LEN+GAP;
+
+  // the bellows (fuelle) bridging the inner ends
+  const bellows=new THREE.Group();bellows.position.x=LEN+GAP/2;
+  bellows.add(box(GAP-.12,1.95,W-.55,dark,0,1.62,0));
+  for(let i=0;i<4;i++)bellows.add(box(.07,2.05,W-.4,dark,(i-1.5)*(GAP-.2)/3,1.62,0));
+  bellows.add(box(GAP+.15,.5,W-.5,dark,0,.42,0));
+  train.add(bellows);
+  const TMID=(2*LEN+GAP)/2-1.5; // train centre in line space once docked (nose ≈ -1.4)
 
   /* floating 3D slashes + sun ring (they ride with the train so they stay in frame) */
   const fx=new THREE.Group();line.add(fx);
@@ -307,28 +491,28 @@ if('IntersectionObserver' in window){
   pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
   const dust=new THREE.Points(pg,new THREE.PointsMaterial({color:0xffa36b,size:.18,transparent:true,opacity:.8,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(dust);
 
-  /* camera angles, in rail-line space (train nose at x≈-1.5, tail at x≈+27.5; +z = side facing the viewer)
+  /* camera angles, in rail-line space (docked train: nose x≈-1.4, tail x≈+20, centre x≈9.2; +z = side facing the viewer)
      [position, look-at, fov offset] — desktop and phone variants */
   const V=(x,y,z)=>new THREE.Vector3(x,y,z);
   const SHOTS={
     wide:[
-      {p:V(-16.3,3.4,10.9), t:V(-1.4,2.6,-.5),  name:'CAM 01 · ANDÉN'},
-      {p:V(4,19,9),         t:V(13,2.4,-1.5),   name:'CAM 02 · CENITAL · PANELES'},
-      {p:V(9,1.1,8.6),      t:V(16,3.2,-24),    name:'CAM 03 · LATERAL BAJA'},
-      {p:V(-17,2.4,-3.2),   t:V(4,1.9,.6),      name:'CAM 04 · FRONTAL'},
-      {p:V(-52,24,26),      t:V(22,1,-12),      name:'CAM 05 · AÉREA'},
-      {p:V(-6,1.5,7),       t:V(318,66,-197),   name:'CAM 06 · CIELO · ÓRBITA'}
+      {p:V(-16.3,3.4,10.9), t:V(-1.4,2.6,-.5),   name:'CAM 01 · ANDÉN'},
+      {p:V(2.5,17,8.5),     t:V(TMID,2.4,-1.5),  name:'CAM 02 · CENITAL · PANELES'},
+      {p:V(7.5,2.6,15),     t:V(TMID+1,2.2,-30), name:'CAM 03 · LATERAL BAJA'},
+      {p:V(3.2,2.2,8.8),    t:V(10.6,1.9,-.8),   name:'CAM 04 · COSTADO'},
+      {p:V(-44,22,26),      t:V(10.5,1.2,-9),    name:'CAM 05 · AÉREA'},
+      {p:V(-6,1.5,7),       t:V(318,66,-197),    name:'CAM 06 · CIELO · ESTRELLAS'}
     ],
     narrow:[
-      {p:V(-6,4.6,22),      t:V(2,3.2,0),       name:'CAM 01 · ANDÉN'},
-      {p:V(8,26,8),         t:V(11,2.4,-2),     name:'CAM 02 · CENITAL · PANELES'},
-      {p:V(4,1.4,12),       t:V(13,3.6,-24),    name:'CAM 03 · LATERAL BAJA'},
-      {p:V(-20,2.8,-1.5),   t:V(6,2.6,.4),      name:'CAM 04 · FRONTAL'},
-      {p:V(-60,32,30),      t:V(18,4,-10),      name:'CAM 05 · AÉREA'},
-      {p:V(-9,1.8,10),      t:V(318,80,-197),   name:'CAM 06 · CIELO · ÓRBITA'}
+      {p:V(-6,4.6,22),      t:V(2,3.2,0),        name:'CAM 01 · ANDÉN'},
+      {p:V(5,24,9),         t:V(9,2.4,-2),       name:'CAM 02 · CENITAL · PANELES'},
+      {p:V(5,2.2,15),       t:V(10,3,-28),       name:'CAM 03 · LATERAL BAJA'},
+      {p:V(3,2.6,11.5),     t:V(9.5,2.1,-1),     name:'CAM 04 · COSTADO'},
+      {p:V(-52,30,30),      t:V(10,3,-9),        name:'CAM 05 · AÉREA'},
+      {p:V(-9,1.8,10),      t:V(318,80,-197),    name:'CAM 06 · CIELO · ESTRELLAS'}
     ]
   };
-  const NEXT=['PRE-HACKATÓN','VOLCÁN','PURMAMARCA','TILCARA','HUMAHUACA','ÓRBITA'];
+  const NEXT=['PRE-HACKATÓN','VOLCÁN','PURMAMARCA','TILCARA','ÓRBITA','TILCARA'];
 
   let narrow=false;
   function resize(){
@@ -367,6 +551,32 @@ if('IntersectionObserver' in window){
   const speedEl=document.getElementById('speed'),statusEl=document.getElementById('status'),statusText=document.getElementById('statusText');
   const nextEl=document.getElementById('next'),progEl=document.getElementById('prog'),camEl=document.getElementById('cam'),camText=document.getElementById('camText');
   const todEl=document.getElementById('tod');
+  const boardEl=document.querySelector('.board');
+  let boardSide='right'; // 'left' | 'right' | 'off' — 'off' leaves the stage clear for the big statement
+  function boardApply(){
+    if(boardEl.classList.contains('bye')||boardEl.classList.contains('hi'))return; // converges on animationend
+    const off=boardSide==='off',isOff=boardEl.classList.contains('off');
+    if(off===isOff&&(off||boardEl.classList.contains('le')===(boardSide==='left')))return;
+    if(!off&&isOff){ // rematerialize on the target side, no need to dissolve what's already gone
+      boardEl.classList.remove('off');
+      boardEl.classList.toggle('le',boardSide==='left');
+      boardEl.classList.add('hi');
+      return;
+    }
+    boardEl.classList.add('bye');
+  }
+  function setBoardSide(s){boardSide=s;boardApply();}
+  boardEl.addEventListener('animationend',()=>{
+    if(boardEl.classList.contains('bye')){
+      boardEl.classList.remove('bye');
+      boardEl.classList.toggle('le',boardSide==='left');
+      boardEl.classList.toggle('off',boardSide==='off');
+      if(boardSide!=='off')boardEl.classList.add('hi');
+    }else{
+      boardEl.classList.remove('hi');
+      boardApply(); // in case the target changed mid-animation
+    }
+  });
   const START=150,STOP=-1.5,DUR=6.5,CRUISE=15;
   let t0=performance.now(),last=t0,arrX=START,speed=0,travel=0,state='',lastShot=-1;
   const camPos=new THREE.Vector3(),camTgt=new THREE.Vector3(),wantPos=new THREE.Vector3(),wantTgt=new THREE.Vector3();
@@ -449,6 +659,8 @@ if('IntersectionObserver' in window){
     planet.material.opacity=nightK;moon.material.opacity=nightK;
     pglow.material.opacity=.55*nightK;pring.material.opacity=.22*nightK;pring2.material.opacity=.5*nightK;
     dust.material.opacity=.15+.7*nightK;beams.forEach(b=>b.intensity=.3+2.2*nightK);
+    lampW.opacity=lampR.opacity=.35+.65*nightK; // lamps, cabin light and laptop screens glow as night falls
+    innerMat.color.copy(innerBase).multiplyScalar(.8+.2*nightK);scrMat.color.copy(scrBase).multiplyScalar(.5+.5*nightK);
     const cyc=reduce?.55:(t%24)/15;
     if(cyc<=1){
       rocket.visible=nightK>.2;rocketAt(cyc);rocket.position.copy(rp);rocket.quaternion.setFromUnitVectors(UP,rv);
@@ -461,7 +673,8 @@ if('IntersectionObserver' in window){
       trailLine.material.opacity=Math.max(0,trailLine.material.opacity-dt*.25);smoke.material.opacity=trailLine.material.opacity*.22;
       if(trailLine.material.opacity<=0&&trailN){trailN=0;trailGeo.setDrawRange(0,0);}
     }
-    const w=THREE.MathUtils.smoothstep(shotF,chapters.length+.05,chapters.length+.6);
+    // the star-rain warp is the climax of the last chapter ("un viaje"), not a separate stop
+    const w=THREE.MathUtils.smoothstep(shotF,chapters.length-.6,chapters.length+.1);
     warp.visible=w>.01;
     if(warp.visible){
       const len=1+w*55;
@@ -472,10 +685,10 @@ if('IntersectionObserver' in window){
       }
       warpGeo.attributes.position.needsUpdate=true;warpMat.opacity=w;
     }
-    flashEl.style.opacity=(Math.max(0,w-.75)*2.4).toFixed(2);
+    flashEl.style.opacity=(Math.max(0,w-.85)*2.4).toFixed(2); // bloom on exit, keep the statement readable
     stars.material.opacity=bright.material.opacity*(1-w*.7);
     hudEl.classList.toggle('on',shotF>chapters.length-.5);
-    if(w>.5){statusText.textContent='SALTO A LA ÓRBITA';speedEl.textContent='LUZ';state='';}
+    if(w>.5){statusText.textContent='VIAJE NOCTURNO';speedEl.textContent='LUZ';state='';}
     const baseFov=narrow?52:34,fv=baseFov+w*22;if(Math.abs(camera.fov-fv)>.05){camera.fov=fv;camera.updateProjectionMatrix();}
 
     // 2) camera: blend between shots (hold near each chapter, move between them)
@@ -496,9 +709,10 @@ if('IntersectionObserver' in window){
 
     // HUD
     const shot=Math.round(shotF);
-    if(shot!==lastShot){lastShot=shot;camText.textContent=shots[Math.min(shot,shots.length-1)].name;nextEl.textContent=NEXT[Math.min(shot,NEXT.length-1)];camEl.classList.toggle('on',shotF>.5);}
+    if(shot!==lastShot){lastShot=shot;camText.textContent=shots[Math.min(shot,shots.length-1)].name;nextEl.textContent=NEXT[Math.min(shot,NEXT.length-1)];camEl.classList.toggle('on',shotF>.5);
+      const ch=chapters[shot-1];setBoardSide(shot>chapters.length?'off':!ch?'right':ch.classList.contains('center')?'off':ch.classList.contains('right')?'left':'right');}
     progEl.style.width=(Math.min(shotF/chapters.length,1)*100).toFixed(1)+'%';
-    // the platform clock runs on hackathon time: 08:00 departure → ~23:30 orbit
+    // the platform clock runs on hackathon time: 08:00 departure → ~23:30 arrival
     const hr=8+shotF/(chapters.length+1)*15.5;
     clock.textContent=String(Math.floor(hr)).padStart(2,'0')+':'+String(Math.floor((hr%1)*60)).padStart(2,'0');
     const tod=hr<12?'MAÑANA':hr<20?'TARDE':'NOCHE';
@@ -507,4 +721,54 @@ if('IntersectionObserver' in window){
     renderer.render(scene,camera);
   }
   requestAnimationFrame(frame);
+})();
+
+/* ---------- snap scroll: inside the stage each wheel tick glides to the next stop ---------- */
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const stage=document.querySelector('.stage');
+  const stops=[...document.querySelectorAll('.chapter')];
+  let busy=false,restAt=0;
+
+  function targets(){
+    const vh=innerHeight,y=scrollY;
+    const t=[y+stage.getBoundingClientRect().top]; // hero = stage top
+    stops.forEach(c=>{const r=c.getBoundingClientRect();t.push(y+r.top+r.height/2-vh/2);});
+    return t; // the last stop is the closing chapter — after it the page flows on its own
+  }
+  function glide(to){
+    const from=scrollY,d=to-from,t0=performance.now();
+    const dur=Math.min(880,400+Math.abs(d)*.26);
+    busy=true;
+    (function step(now){
+      const p=Math.min((now-t0)/dur,1),e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+      scrollTo({top:from+d*e,behavior:'instant'});
+      if(p<1)requestAnimationFrame(step);else{busy=false;restAt=performance.now();}
+    })(t0);
+  }
+  function hop(dir){
+    const y=scrollY,ts=targets(),n=ts.length;
+    if(y<ts[0]-2||y>ts[n-1]+2)return false;
+    let idx=-1;
+    if(dir>0){for(let i=0;i<n;i++)if(ts[i]>y+4){idx=i;break;}}
+    else{for(let i=n-1;i>=0;i--)if(ts[i]<y-4){idx=i;break;}}
+    if(idx<0)return false;
+    glide(ts[idx]);return true;
+  }
+  const lock=()=>busy||performance.now()-restAt<280;
+  addEventListener('wheel',e=>{
+    if(e.ctrlKey||!e.deltaY)return; // pinch-zoom and horizontal pans stay native
+    if(lock()){e.preventDefault();return;}
+    // mouse-wheel notches (line mode or ≥40px per event) glide stop-to-stop;
+    // small pixel deltas are a trackpad pan — let it scroll natively
+    if(e.deltaMode===0&&Math.abs(e.deltaY)<40)return;
+    if(hop(Math.sign(e.deltaY)))e.preventDefault();
+  },{passive:false});
+  addEventListener('keydown',e=>{
+    if(e.target instanceof Element&&e.target.closest('input,textarea,select,[contenteditable],a[href],button'))return;
+    const dir={ArrowDown:1,PageDown:1,' ':1,ArrowUp:-1,PageUp:-1}[e.key];
+    if(!dir)return;
+    if(lock()){e.preventDefault();return;}
+    if(hop(dir))e.preventDefault();
+  });
 })();

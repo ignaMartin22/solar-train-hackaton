@@ -1,15 +1,12 @@
 import { startGL } from "./route-gl.js";
-import { activateRoute } from "./route-map.js";
 
 // Route backdrop: WebGPU via vgpu where supported, WebGL2 fallback otherwise.
-// Last resort: canvas stays empty and the section keeps its flat layout.
+// Pure atmosphere behind the SVG map — if neither backend starts, the canvas
+// is removed and the map keeps carrying the section on its own.
 const section = document.getElementById("route");
 const canvas = document.getElementById("route-bg");
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const routeMap = section ? activateRoute(section) : null;
-const getWrapRect = routeMap ? routeMap.getRect : () => ({ x0: 0, x1: 1, y0: 0.6, y1: 0.95 });
-const wrapParams = () => { const r = getWrapRect(); return { x0: r.x0, x1: r.x1, y0: r.y0, y1: r.y1 }; };
 
 async function startVGPU() {
   if (!navigator.gpu) return false;
@@ -23,9 +20,9 @@ async function startVGPU() {
   gpu.onError((e) => console.error("[route-bg] gpu:", e));
   const surf = surface(gpu, canvas);
   const fx = effect(gpu, routeBgShader, {
-    set: { params: { time: 0, width: 1, height: 1, prog: 0, ...wrapParams() } },
+    set: { params: { time: 0, width: 1, height: 1, prog: 0 } },
   });
-  surf.onResize(({ width, height }) => fx.set({ params: { width, height, ...wrapParams() } }));
+  surf.onResize(({ width, height }) => fx.set({ params: { width, height } }));
 
   if (reduce) { frame(gpu, (f) => f.pass(surf, fx)); return true; }
 
@@ -37,7 +34,7 @@ async function startVGPU() {
     if (!visible) return;
     const r = section.getBoundingClientRect();
     const prog = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height)));
-    fx.set({ params: { time: time.time, prog, ...wrapParams() } });
+    fx.set({ params: { time: time.time, prog } });
     f.pass(surf, fx);
   });
   return true;
@@ -48,8 +45,8 @@ async function startVGPU() {
   let backend = null;
   try { if (await startVGPU()) backend = "WebGPU (vgpu)"; } catch (e) { console.warn("[route-bg] WebGPU failed, trying WebGL2:", e); }
   if (!backend) {
-    try { if (startGL(canvas, section, reduce, getWrapRect)) backend = "WebGL2"; } catch (e) { console.warn("[route-bg] WebGL2 failed:", e); }
+    try { if (startGL(canvas, section, reduce)) backend = "WebGL2"; } catch (e) { console.warn("[route-bg] WebGL2 failed:", e); }
   }
-  if (!backend) { canvas.remove(); routeMap?.reset(); }
+  if (!backend) canvas.remove();
   else console.debug("[route-bg] rendering via", backend);
 })();

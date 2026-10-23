@@ -1,0 +1,9 @@
+---
+const items = ["Build", "Innovate", "Travel further", "Ideas que viajan lejos", "Real problems", "Real places", "Real impact"];
+---
+
+<div class="band" aria-hidden="true">
+  <div class="track">
+    {[...items, ...items].map((item) => <span>{item}</span>)}
+  </div>
+</div>

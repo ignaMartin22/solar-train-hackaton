@@ -1,0 +1,167 @@
+---
+import { ROUTE_GEO as G } from "../data/route-geo.js";
+
+/* El corredor corre de sur a norte; el mapa se presenta rotado para que el viaje
+   se lea de izquierda a derecha: Volcán → Tilcara, como un perfil geográfico.
+   Proyección equirectangular (cos de la lat media). El SVG sale renderizado del
+   servidor — el mapa existe sin JS. */
+const [w, s, e, n] = G.bbox;
+const H = 680, kx = Math.cos(((s + n) / 2) * Math.PI / 180);
+const VH = Math.round((H * (e - w) * kx) / (n - s)); // alto en orientación norte-arriba
+const W = H, HH = VH; // rotado: horizontal
+const px = (lat: number) => ((lat - s) / (n - s)) * W;
+const py = (lon: number) => ((lon - w) * kx / (n - s)) * W;
+const path = (seg: number[][]) => seg.map((p, i) => (i ? "L" : "M") + px(p[1]).toFixed(1) + " " + py(p[0]).toFixed(1)).join("");
+// one multi-subpath d per feature class — hundreds of OSM ways stay ~8 DOM nodes
+const path2 = (segs: number[][][]) => segs.map(path).join("");
+
+// graticulado real cada 0.05°, ya rotado
+const grX: number[] = [], grY: number[] = [];
+for (let la = Math.ceil(s / 0.05) * 0.05; la <= n; la += 0.05) grX.push(px(la));
+for (let lo = Math.ceil(w / 0.05) * 0.05; lo <= e; lo += 0.05) grY.push(py(lo));
+
+// km recorridos sobre la traza real (aprox, para el detalle de cada estación)
+const cum = [0];
+for (let i = 1; i < G.route.length; i++) {
+  const a = G.route[i - 1], b = G.route[i];
+  cum.push(cum[i - 1] + Math.hypot((b[0] - a[0]) * kx * 111.32, (b[1] - a[1]) * 110.57));
+}
+const kmOf = (st: { lon: number; lat: number }) => {
+  let bi = 0, bd = 1e9;
+  G.route.forEach((p, i) => {
+    const d = Math.hypot((p[0] - st.lon) * kx * 111.32, (p[1] - st.lat) * 110.57);
+    if (d < bd) { bd = d; bi = i; }
+  });
+  return cum[bi];
+};
+const fmtKm = (k: number) => k.toFixed(1).replace(".", ",");
+
+const stations = G.stations.map((st, i) => {
+  const km = kmOf(st);
+  const desc = i === 0
+    ? "Origen del recorrido · km 0"
+    : i === G.stations.length - 1
+      ? "Fin del recorrido · 42 km desde Volcán"
+      : `Km aprox. ${fmtKm(km)} desde Volcán${st.note ? " · " + st.note : ""}`;
+  // etiquetas alternadas arriba/abajo de la línea para que no se pisen;
+  // "Posta de Hornillos" es largo: va en dos líneas debajo
+  const wrap = st.id === "posta" ? ["Posta de", "Hornillos"] : null;
+  const up = st.id === "tumbaya" || st.id === "maimara";
+  // ajustes finos para que ninguna etiqueta toque el borde ni a su vecina
+  const dx = st.id === "maimara" ? 16 : 0;
+  const start = st.id === "volcan";
+  return { ...st, i: i + 1, x: px(st.lat), y: py(st.lon), desc, wrap, up, dx, start };
+});
+const km10 = (10 / 110.57) / (n - s) * W; // barra de escala real (eje x = latitud)
+---
+
+<section class="route" id="route">
+  <canvas id="route-bg" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="route-head">
+      <div>
+        <div class="eyebrow">El recorrido</div>
+        <h3 class="sec">Ideas que <em>viajan lejos.</em></h3>
+      </div>
+      <p>Viaja de Volcán a Tilcara a través de seis estaciones de la Quebrada de Humahuaca: 42 km sobre el ramal del FC Belgrano.</p>
+    </div>
+    <div class="rmap">
+      <figure class="rmap-map">
+        <div class="rmap-scroll">
+          <div class="rmap-inner">
+            <svg class="rmap-svg" viewBox={`0 0 ${W} ${HH}`} role="img" aria-labelledby="rmap-cap">
+              <title id="rmap-cap">Mapa del recorrido del Tren Solar de la Quebrada: seis estaciones de Volcán a Tilcara, con el Río Grande y la RN9.</title>
+              {grX.map((x) => <line class="gr" x1={x} y1={0} x2={x} y2={HH} />)}
+              {grY.map((y) => <line class="gr" x1={0} y1={y} x2={W} y2={y} />)}
+              <path class="rv2" d={path2(G.river2)} />
+              <path class="rd2" d={path2(G.road2)} />
+              <path class="rv" d={path2(G.river)} />
+              <path class="rd" d={path2(G.road)} />
+              {G.peaks.map((p) => <path class="pk" d={`M${px(p.lat) - 3.5} ${py(p.lon) + 3}L${px(p.lat)} ${py(p.lon) - 4.5}L${px(p.lat) + 3.5} ${py(p.lon) + 3}Z`} />)}
+              <path class="rl" d={path2(G.rail)} />
+              <path class="rt-under" d={path(G.route)} />
+              <path class="rt" id="rmap-path" d={path(G.route)} pathLength="1" />
+              {G.places.map((p) => (
+                <g class="place" transform={`translate(${px(p.lat)} ${py(p.lon)})`}>
+                  <circle r="2.6" />
+                  <text x="9" y="4" text-anchor="start">{p.name} <tspan class="pk2">(pueblo)</tspan></text>
+                </g>
+              ))}
+              {stations.map((st) => (
+                <g class:list={["stp", { sel: st.i === 1 }]} data-stop={st.id} transform={`translate(${st.x} ${st.y})`}>
+                  <circle class="dot-halo" r="10" />
+                  <circle class="dot" r="4.2" />
+                  {st.wrap ? (
+                    <text class="lb" x="-14" y="30" text-anchor="end">
+                      <tspan class="ln">{st.i}</tspan> {st.wrap[0]}
+                      <tspan x="-14" dy="1.2em">{st.wrap[1]}</tspan>
+                    </text>
+                  ) : st.start ? (
+                    <text class="lb" x="12" y="20" text-anchor="start">
+                      <tspan class="ln">{st.i}</tspan> {st.name}
+                    </text>
+                  ) : (
+                    <text class="lb" x={st.dx || 0} y={st.up ? -20 : 20} text-anchor="middle">
+                      <tspan class="ln">{st.i}</tspan> {st.name}
+                    </text>
+                  )}
+                </g>
+              ))}
+              <g class="north" transform="translate(30 24)">
+                <path d="M-8 0H9M3 -4.5L9 0L3 4.5" />
+                <text y="-10" text-anchor="middle">N</text>
+              </g>
+              <g class="scale" transform={`translate(24 ${HH - 18})`}>
+                <line x1="0" y1="0" x2={km10} y2="0" />
+                <line x1="0" y1="-3.5" x2="0" y2="3.5" />
+                <line x1={km10} y1="-3.5" x2={km10} y2="3.5" />
+                <text x={km10 / 2} y="-8" text-anchor="middle">10 km</text>
+              </g>
+            </svg>
+            {stations.map((st) => (
+              <button
+                type="button"
+                class:list={["rmap-dot", { sel: st.i === 1 }]}
+                style={`left:${((st.x / W) * 100).toFixed(2)}%;top:${((st.y / HH) * 100).toFixed(2)}%`}
+                data-stop={st.id}
+                data-name={st.name}
+                data-desc={st.desc}
+                aria-pressed={st.i === 1}
+                aria-label={`Seleccionar estación ${st.name}`}
+              />
+            ))}
+          </div>
+        </div>
+        <div class="rmap-detail" aria-live="polite">
+          <div class="rmap-dk">Estación 1 de 6</div>
+          <div class="rmap-dn">Volcán</div>
+          <p class="rmap-dd">Origen del recorrido · km 0</p>
+          <p class="rmap-dc">Datos geográficos © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL).</p>
+        </div>
+        <figcaption class="rmap-legend">
+          <span><i class="lg lg-rt"></i>Tren Solar</span>
+          <span><i class="lg lg-rl"></i>Vía FC Belgrano</span>
+          <span><i class="lg lg-rv"></i>Río Grande y afluentes</span>
+          <span><i class="lg lg-rd"></i>RN9 · RN52 · calles</span>
+        </figcaption>
+      </figure>
+      <div class="rmap-chips" role="group" aria-label="Estaciones del recorrido">
+        {stations.map((st) => (
+          <button
+            type="button"
+            class:list={["rmap-chip", { sel: st.i === 1 }]}
+            data-stop={st.id}
+            data-name={st.name}
+            data-desc={st.desc}
+            aria-pressed={st.i === 1}
+          >
+            <span class="rn">{String(st.i).padStart(2, "0")}</span> {st.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  import "../scripts/route-map.js";
+</script>

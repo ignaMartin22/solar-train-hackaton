@@ -1,0 +1,97 @@
+---
+import Base from "../layouts/Base.astro";
+import Scene from "../components/Scene.astro";
+import Hero from "../components/Hero.astro";
+import Chapter from "../components/Chapter.astro";
+import Marquee from "../components/Marquee.astro";
+import Route from "../components/Route.astro";
+import Signup from "../components/Signup.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base>
+  <div class="stage" id="top">
+    <Scene />
+
+    <div class="stage-content">
+      <Hero />
+
+      <Chapter
+        cam={1}
+        stop="Parada 1 · Volcán"
+        title="Energía"
+        em="renovable."
+        text="Mirá el techo: cada vagón lleva sus paneles. El tren avanza con la luz del sol, y la hackatón se construye con lo que el lugar ofrece."
+        facts={[
+          ["Tracción", "Solar"],
+          ["Paneles", "En el techo de cada vagón"],
+          ["Emisiones", "Cero en marcha"],
+        ]}
+      />
+
+      <Chapter
+        cam={2}
+        variant="right"
+        stop="Parada 2 · Purmamarca"
+        title="Lugares"
+        em="reales."
+        text="Los problemas no llegan en un PDF. Los ves desde la ventanilla, entre cardones y cerros de colores, y los conversás en el andén."
+        facts={[
+          ["Altitud", "2.190 m s. n. m."],
+          ["Paisaje", "Quebrada de Humahuaca"],
+          ["Desafíos", "Del territorio, en el territorio"],
+        ]}
+      />
+
+      <Chapter
+        cam={3}
+        stop="Parada 3 · Tilcara"
+        title="Construir"
+        em="juntos."
+        text="Devs, diseño, negocio y gente de la comunidad en el mismo vagón, trabajando sobre la misma idea mientras el paisaje pasa."
+        facts={[
+          ["Equipos", "Multidisciplinarios"],
+          ["Formato", "Hackatón en movimiento"],
+          ["Salida", "Un prototipo funcionando"],
+        ]}
+      />
+
+      <Chapter
+        cam={4}
+        variant="right"
+        stop="Parada 4 · Órbita"
+        title="Ideas que viajan"
+        em="más allá."
+        text="La Quebrada es la plataforma de lanzamiento. Lo que construyas a bordo puede llegar mucho más lejos que la última estación."
+        facts={[
+          ["Altitud", "De 2.460 m a lo que imagines"],
+          ["Propulsión", "Solar + ideas"],
+          ["Ventana", "Abre con la Pre-Hackatón"],
+        ]}
+      />
+
+      <Chapter
+        cam={5}
+        variant="center"
+        stop="Parada 5 · Tilcara"
+        title="Más que una hackatón,"
+        em="un viaje."
+        text="Resolvés desafíos reales mientras el tren recorre la Quebrada. Cada equipo baja con algo construido."
+      />
+
+    </div>
+  </div>
+
+  <Marquee />
+
+  <main>
+    <Route />
+    <Signup />
+  </main>
+
+  <Footer />
+
+  <script>
+    import "../scripts/main.js";
+  </script>
+</Base>

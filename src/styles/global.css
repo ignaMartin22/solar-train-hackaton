@@ -10,7 +10,11 @@ html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scrollbar-color:#3a4250 var(--ground);scrollbar-width:thin}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--ground)}
+::-webkit-scrollbar-thumb{background:#3a4250;border:2px solid var(--ground);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--solar)}
 body{background:var(--ground);color:var(--bone);font-family:var(--f-body);font-size:16px;line-height:1.55;overflow-x:clip}
 .wrap{max-width:1240px;margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 @media (max-width:520px){.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
@@ -36,20 +40,31 @@ body{background:var(--ground);color:var(--bone);font-family:var(--f-body);font-s
 .flash{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(220,235,255,.9),rgba(220,235,255,0) 60%);opacity:0}
 #scene{position:absolute;inset:0;width:100%;height:100%;display:block}
 .stage-sticky::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(0deg,rgba(11,14,19,1) 0%,rgba(11,14,19,.62) 15%,rgba(11,14,19,0) 34%),linear-gradient(180deg,rgba(11,14,19,.5) 0%,rgba(11,14,19,0) 16%)}
+  background:linear-gradient(0deg,rgba(11,14,19,.96) 0%,rgba(11,14,19,.72) 12%,rgba(11,14,19,.42) 24%,rgba(11,14,19,.15) 36%,rgba(11,14,19,0) 50%),linear-gradient(180deg,rgba(11,14,19,.5) 0%,rgba(11,14,19,0) 16%)}
 .stage-content{position:relative;z-index:2;margin-top:-100svh}
 
 /* ---------- HERO ---------- */
-.hero{position:relative;min-height:100svh;
-  background:linear-gradient(90deg,rgba(11,14,19,.86) 0%,rgba(11,14,19,.55) 34%,rgba(11,14,19,0) 60%)}
-.hero-inner{min-height:100svh;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding-block:max(28px,env(safe-area-inset-top,0px)) 48px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.mark{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--bone)}
+.hero{position:relative;min-height:100svh}
+/* readability shadow is a decorative layer ~32vh taller than the header, dissolved
+   by a vertical mask — it stays dark through the hero and fades out into the first
+   chapter instead of cutting at the header's bottom edge */
+.hero::before{content:"";position:absolute;inset:0 0 -32vh 0;z-index:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(11,14,19,.86) 0%,rgba(11,14,19,.5) 30%,rgba(11,14,19,0) 56%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 64%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 64%,transparent 100%)}
+/* the hero breaks out of the 1240px wrap: title, copy and CTA sit at the real
+   screen gutter (24px desktop / 16px mobile + safe areas), topbar spans full width */
+.hero-inner{position:relative;z-index:1;min-height:100svh;max-width:none;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding-block:max(28px,env(safe-area-inset-top,0px)) 48px}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
+.mark{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--bone);justify-self:start}
 .mark svg{width:38px;height:30px}
 .mark span{font-family:var(--f-body);font-weight:800;font-size:12px;letter-spacing:.32em;text-transform:uppercase;line-height:1.25}
-.slashes{font-family:var(--f-display);font-style:italic;font-weight:900;color:var(--solar);font-size:28px;letter-spacing:-.05em}
+.topnav{display:flex;align-items:center;gap:20px;justify-self:center}
+.topnav a{font-family:var(--f-mono);font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--muted);padding:6px 0;border-bottom:1px solid transparent;transition:color .2s ease,border-color .2s ease}
+.topnav a:hover{color:var(--bone);border-bottom-color:var(--solar)}
+.slashes{font-family:var(--f-display);font-style:italic;font-weight:900;color:var(--solar);font-size:28px;letter-spacing:-.05em;justify-self:end}
 
-.copy{max-width:720px}
+.copy{max-width:560px}
 .kicker{font-weight:800;font-size:clamp(13px,1.5vw,17px);letter-spacing:.42em;text-transform:uppercase;color:var(--bone);display:flex;align-items:center;gap:14px}
 .kicker i{display:inline-block;width:42px;height:2px;background:var(--solar)}
 .word{font-family:var(--f-display);font-style:italic;font-weight:900;text-transform:uppercase;
@@ -81,9 +96,25 @@ body{background:var(--ground);color:var(--bone);font-family:var(--f-body);font-s
 .fact:last-child{border-right:0}
 .fact svg{width:22px;height:22px;flex:none;color:var(--solar)}
 
-/* station board (lives in the sticky stage) */
-.board{position:absolute;right:max(24px,env(safe-area-inset-right,0px));top:118px;z-index:3;width:300px;background:rgba(15,18,24,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  border:1px solid rgba(244,240,234,.12);border-radius:10px;padding:16px 18px;font-family:var(--f-mono);font-size:12px}
+/* station board (lives in the sticky stage); vertically centered to match the cards */
+.board{position:absolute;right:max(24px,env(safe-area-inset-right,0px));top:50%;translate:0 -50%;z-index:3;width:284px;background:rgba(15,18,24,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(244,240,234,.12);border-radius:10px;padding:14px 16px;font-family:var(--f-mono);font-size:11.5px}
+/* the board teleports to the side opposite the active chapter card: it scans out
+   upward, flips side instantly, and materializes back — same dissolve language as .card */
+.board.le{right:auto;left:max(24px,env(safe-area-inset-left,0px))}
+.board.off{opacity:0;pointer-events:none}
+.board.bye{animation:boardOut .34s cubic-bezier(.55,.06,.68,.19) forwards}
+.board.hi{animation:boardIn .34s cubic-bezier(.22,.9,.26,1) forwards}
+@keyframes boardOut{
+  0%{opacity:1;filter:none;transform:none;clip-path:inset(0)}
+  50%{opacity:1;filter:blur(2px) saturate(2.2) brightness(1.6);transform:translateY(-5px) skewX(-3deg);clip-path:inset(0 0 42% 0)}
+  100%{opacity:0;filter:blur(14px) saturate(0) brightness(2.2);transform:translateY(-16px) skewX(-6deg) scale(.96);clip-path:inset(0 0 100% 0)}
+}
+@keyframes boardIn{
+  0%{opacity:0;filter:blur(14px) saturate(0) brightness(2.2);transform:translateY(16px) skewX(6deg) scale(.96);clip-path:inset(100% 0 0 0)}
+  50%{opacity:1;filter:blur(2px) saturate(2.2) brightness(1.6);transform:translateY(5px) skewX(3deg);clip-path:inset(38% 0 0 0)}
+  100%{opacity:1;filter:none;transform:none;clip-path:inset(0)}
+}
 .board h2{margin:0 0 10px;font-size:10.5px;letter-spacing:.24em;color:var(--muted);font-weight:700;display:flex;justify-content:space-between}
 .board .row{display:grid;grid-template-columns:78px 1fr;gap:8px;padding:7px 0;border-top:1px solid var(--line)}
 .board .k{color:var(--muted)}
@@ -108,15 +139,14 @@ body{background:var(--ground);color:var(--bone);font-family:var(--f-body);font-s
 @keyframes rise{from{transform:translateY(26px)}to{transform:none}}
 
 /* ---------- CHAPTERS ---------- */
-.chapter{min-height:130svh;display:flex;align-items:center;padding-block:15svh}
-.chapter .wrap{width:100%;display:flex}
+.chapter{min-height:118svh;display:flex;align-items:center;padding-block:12svh}
+/* cards ride at the screen edge, opposite the board — the train stays between them */
+.chapter .wrap{width:100%;max-width:none;display:flex}
 .chapter{--cx:-26px}
 .chapter.right{--cx:26px}
 .chapter.center{--cx:0px}
 .chapter.right .wrap{justify-content:flex-end}
 .chapter.center .wrap{justify-content:center;text-align:center}
-/* right-hand cards drop below the sticky departures board (board bottom ≈ 395px) */
-@media (min-width:981px){.chapter.right .card,.chapter.center .big{top:max(0px,calc(650px - 50svh))}}
 /* cards dissolve out and materialize on their chapter's side; hidden states need JS (.js) so content still shows without it */
 .card{width:min(440px,100%);background:rgba(13,16,22,.74);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border:1px solid rgba(244,240,234,.12);border-radius:10px;padding:30px 30px 26px;position:relative;overflow:hidden;
@@ -150,7 +180,6 @@ body{background:var(--ground);color:var(--bone);font-family:var(--f-body);font-s
 .track span{font-family:var(--f-display);font-style:italic;font-weight:900;font-size:clamp(24px,3.2vw,40px);text-transform:uppercase;letter-spacing:-.01em;white-space:nowrap;padding-right:36px;display:flex;align-items:center;gap:36px}
 .track span::after{content:"//";color:var(--bone)}
 @keyframes marq{to{transform:translateX(-50%)}}
-@keyframes nodeping{0%{transform:scale(.55);opacity:.85}70%,100%{transform:scale(1.9);opacity:0}}
 
 /* ---------- SECTIONS ---------- */
 section{padding-block:96px}
@@ -160,55 +189,83 @@ h3.sec{font-family:var(--f-display);font-style:italic;font-weight:900;text-trans
 h3.sec em{color:var(--solar);font-style:italic}
 
 /* route */
-.route{background:var(--raised);position:relative;overflow:hidden}
+.route{background:var(--raised);position:relative;overflow:hidden;padding-top:clamp(120px,18vh,200px)}
 .route #route-bg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.route::before{content:"";position:absolute;inset:0 0 auto 0;height:200px;z-index:1;pointer-events:none;
-  background:linear-gradient(180deg,var(--ground) 0%,rgba(11,14,19,.55) 45%,transparent 100%)}
+/* long melt from the stage's night sky into the section, so exiting the 3D scene
+   doesn't read as a page break */
+.route::before{content:"";position:absolute;inset:0 0 auto 0;height:min(46vh,420px);z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,var(--ground) 0%,rgba(11,14,19,.6) 45%,transparent 100%)}
 .route::after{content:"";position:absolute;inset:auto 0 0 0;height:220px;z-index:1;pointer-events:none;
   background:linear-gradient(0deg,var(--ground) 0%,rgba(11,14,19,.55) 45%,transparent 100%)}
 .route .wrap{position:relative;z-index:2}
-.route-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px}
+.js .route-head{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.js .route-head.in{opacity:1;transform:none}
+.route-head{display:grid;grid-template-columns:1fr minmax(280px,44ch);align-items:end;gap:20px}
 .route-head p{color:var(--muted);max-width:44ch;margin:0}
-.line-wrap{margin-top:56px;padding-bottom:6px}
-.line{position:relative;height:150px}
-.line .rail{position:absolute;left:0;right:0;top:56px;height:4px;background:repeating-linear-gradient(90deg,var(--line) 0 14px,transparent 14px 22px)}
-.line .lit{position:absolute;left:0;top:56px;height:4px;width:0;background:var(--solar);box-shadow:0 0 18px rgba(255,90,31,.8);transition:width 2.4s cubic-bezier(.3,.7,.2,1)}
-.route.on .lit{width:100%}
-.stops{position:absolute;inset:0;display:flex;justify-content:space-between}
-.stop{position:relative;display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;padding:0 4px;text-align:center}
-.stop .alt{font-family:var(--f-mono);font-size:clamp(9px,.95vw,11px);color:var(--muted);height:32px}
-.stop b{width:20px;height:20px;border-radius:50%;background:var(--ground);border:4px solid var(--solar);margin-top:6px}
-.stop span{margin-top:16px;font-weight:800;font-size:clamp(10px,1.05vw,13px);letter-spacing:.1em;text-transform:uppercase}
-.stop.end b{background:var(--solar);box-shadow:0 0 0 6px rgba(255,90,31,.22)}
-
-/* elevation-chart mode (active once a GL backend starts) */
-@media (min-width:641px){
-  .route.gl .line{height:300px}
-  .route.gl .rail,.route.gl .lit{display:none}
-  .route.gl .stop{position:absolute;width:0;height:0;padding:0}
-  .route.gl .stop .alt{position:absolute;bottom:16px;left:0;transform:translateX(-50%);height:auto;white-space:nowrap;color:var(--bone);text-shadow:0 1px 8px var(--ground),0 0 2px var(--ground)}
-  .route.gl .stop b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;box-shadow:0 0 0 3px rgba(255,90,31,.16),0 0 16px rgba(255,90,31,.5)}
-  .route.gl .stop b::after{content:"";position:absolute;inset:-7px;border:2px solid rgba(255,90,31,.55);border-radius:50%;animation:nodeping 3.4s cubic-bezier(.2,.6,.3,1) infinite}
-  .route.gl .stop:nth-child(2) b::after{animation-delay:.5s}
-  .route.gl .stop:nth-child(3) b::after{animation-delay:1s}
-  .route.gl .stop:nth-child(4) b::after{animation-delay:1.5s}
-  .route.gl .stop:nth-child(5) b::after{animation-delay:2s}
-  .route.gl .stop:nth-child(6) b::after{animation-delay:2.5s}
-  .route.gl .stop:nth-child(7) b::after{animation-delay:3s}
-  .route.gl .stop span:not(.alt){position:absolute;top:14px;left:0;transform:translateX(-50%);margin:0;white-space:nowrap;text-shadow:0 1px 8px var(--ground),0 0 2px var(--ground)}
+/* geographic map: server-rendered SVG of the real Volcán → Tilcara corridor,
+   rotated so the ride reads left → right like a profile — fits the viewport */
+.rmap{margin-top:44px}
+.rmap-map{position:relative;margin:0 auto;width:min(1120px,calc((100svh - 340px) * 1.766),100%);background:#0e131b;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rmap-scroll{overflow-x:auto;scrollbar-width:none}
+.rmap-inner{position:relative;min-width:620px}
+.rmap-svg{display:block;width:100%;height:auto}
+.rmap-legend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:11px 16px;border-top:1px solid var(--line);font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;color:var(--muted)}
+.rmap-legend span{display:inline-flex;align-items:center;gap:8px}
+.lg{display:inline-block;width:22px;height:0;border-top:2.5px solid var(--solar);flex:none}
+.lg-rl{border-color:#4a5162}
+.lg-rv{border-color:#3d5a78}
+.lg-rd{border-top-style:dashed;border-color:#40485a}
+.gr{stroke:#1e2530;stroke-width:.6}
+.rv{fill:none;stroke:#3d5a78;stroke-width:1.5;stroke-linecap:round;opacity:.55}
+.rv2{fill:none;stroke:#3d5a78;stroke-width:.8;stroke-linecap:round;opacity:.3}
+.rd{fill:none;stroke:#40485a;stroke-width:1.1;opacity:.7;stroke-dasharray:6 4}
+.rd2{fill:none;stroke:#40485a;stroke-width:.8;opacity:.4;stroke-dasharray:4 4}
+.rl{fill:none;stroke:#4a5162;stroke-width:1.4;opacity:.7}
+.rt-under{fill:none;stroke:#ff5a1f;stroke-width:9;stroke-linecap:round;opacity:.16}
+.rt{fill:none;stroke:var(--solar);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+/* draw-on animation only exists when JS can add .on — no JS, plain solid line */
+.js .rt{stroke-dasharray:1;stroke-dashoffset:1}
+.js .route.on .rt{stroke-dashoffset:0;transition:stroke-dashoffset 2.4s cubic-bezier(.3,.7,.2,1) .25s}
+.pk{fill:#5b6478;opacity:.55}
+.place circle{fill:#7a8291}
+.place text{font-family:var(--f-mono);font-size:11px;fill:var(--muted);letter-spacing:.06em}
+.place .pk2{opacity:.75;font-style:italic}
+.stp .dot-halo{fill:rgba(255,90,31,.13)}
+.stp .dot{fill:#0e131b;stroke:var(--solar);stroke-width:2.8}
+.stp.sel .dot{fill:var(--solar)}
+.stp.sel .dot-halo{fill:rgba(255,90,31,.3)}
+.stp .lb{font-family:var(--f-mono);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;fill:var(--bone);paint-order:stroke;stroke:#0e131b;stroke-width:5px}
+.stp .ln{fill:var(--solar)}
+.north path{stroke:var(--bone);stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.north text{font-family:var(--f-mono);font-size:11px;font-weight:700;fill:var(--bone)}
+.scale line{stroke:var(--muted);stroke-width:1.4}
+.scale text{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted);letter-spacing:.08em}
+/* invisible hit targets over the SVG dots — the marker visual lives in the SVG */
+.rmap-dot{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;padding:0;border:0;border-radius:50%;background:transparent;cursor:pointer}
+.rmap-dot:focus-visible{outline:2.5px solid var(--bone);outline-offset:2px}
+/* selected station: floating card over the map */
+.rmap-detail{position:absolute;top:14px;right:14px;z-index:2;width:min(300px,42%);border:1px solid var(--line);border-radius:10px;background:rgba(13,16,22,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:16px 18px}
+.rmap-dk{font-family:var(--f-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--solar);font-weight:700}
+.rmap-dn{font-family:var(--f-display);font-style:italic;font-weight:900;text-transform:uppercase;font-size:clamp(26px,2.6vw,38px);line-height:.95;letter-spacing:-.02em;margin-top:8px}
+.rmap-dd{color:#d3cdc4;margin:10px 0 0;font-size:14px}
+.rmap-dc{font-family:var(--f-mono);font-size:10px;color:var(--muted);margin:12px 0 0;letter-spacing:.04em;line-height:1.6}
+.rmap-dc a{color:inherit;text-underline-offset:3px}
+/* station chips under the map */
+.rmap-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+.rmap-chip{display:inline-flex;align-items:baseline;gap:8px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(244,240,234,.03);color:var(--bone);font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,background .2s}
+.rmap-chip .rn{color:var(--solar);font-weight:700}
+.rmap-chip:hover{border-color:#3a4250;background:rgba(244,240,234,.05)}
+.rmap-chip.sel{border-color:var(--solar);background:rgba(255,90,31,.08)}
+.rmap-chip:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
+@media (max-width:900px){
+  .route-head{grid-template-columns:1fr}
 }
-@media (max-width:640px){
-  .route #route-bg{display:none}
-  .line{height:auto}
-  .line .rail{left:9px;right:auto;top:0;bottom:0;width:4px;height:auto;background:repeating-linear-gradient(180deg,var(--line) 0 14px,transparent 14px 22px)}
-  .line .lit{left:9px;top:0;bottom:auto;width:4px;height:0;transition:height 2.4s cubic-bezier(.3,.7,.2,1)}
-  .route.on .lit{width:4px;height:100%}
-  .stops{position:static;flex-direction:column;gap:26px;padding-left:34px}
-  .stop{flex-direction:row;align-items:center;width:auto;text-align:left;padding:0}
-  .stop .alt{order:2;height:auto;margin-left:auto;font-size:11px}
-  .stop b{position:absolute;left:-23px;top:50%;transform:translateY(-50%);margin:0}
-  .stop span{margin:0;font-size:13px}
+@media (max-width:720px){
+  .rmap-map{width:100%}
+  .rmap-detail{position:static;width:auto;margin:12px 12px 0}
 }
+@media (max-width:520px){.stp .lb{font-size:15px}}
+@media (max-width:640px){.route #route-bg{display:none}}
 
 /* final CTA */
 .final{position:relative;overflow:hidden}
@@ -231,9 +288,12 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   .ticket{justify-self:start}
 }
 @media (max-width:760px){
-  .hero{background:linear-gradient(180deg,rgba(11,14,19,.85) 0%,rgba(11,14,19,.4) 55%,rgba(11,14,19,0) 75%)}
-  .hero-inner{padding-bottom:34svh}
-  .chapter{align-items:flex-end;min-height:120svh;padding-block:20svh 8svh}
+  /* layer is ~32vh taller than the hero, so stops are rescaled to keep the same
+     absolute fade timing the old vertical gradient had (clear by ~75vh) */
+  .hero::before{background:linear-gradient(180deg,rgba(11,14,19,.85) 0%,rgba(11,14,19,.4) 41%,rgba(11,14,19,0) 57%)}
+  .hero-inner{padding-bottom:34svh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .topnav{display:none}
+  .chapter{align-items:flex-end;min-height:112svh;padding-block:18svh 8svh}
   .chapter.right .wrap,.chapter .wrap{justify-content:center}
   .card{padding:22px 20px 18px}
   .card dl{display:none}

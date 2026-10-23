@@ -1,0 +1,29 @@
+---
+interface Props {
+  cam: number;
+  variant?: "right" | "center";
+  stop: string;
+  title: string;
+  em: string;
+  text: string;
+  facts?: [string, string][];
+}
+
+const { cam, variant, stop, title, em, text, facts = [] } = Astro.props;
+const center = variant === "center";
+---
+
+<article class:list={["chapter", variant]} data-cam={cam} id={`parada-${cam}`}>
+  <div class="wrap">
+    <div class={center ? "big" : "card"}>
+      <div class="stopline" style={center ? "justify-content:center" : undefined}>{stop}</div>
+      <h3 style={center ? "margin-top:16px" : undefined}>{title} <em>{em}</em></h3>
+      <p>{text}</p>
+      {facts.length > 0 && (
+        <dl>
+          {facts.map(([dt, dd]) => <div><dt>{dt}</dt><dd>{dd}</dd></div>)}
+        </dl>
+      )}
+    </div>
+  </div>
+</article>
