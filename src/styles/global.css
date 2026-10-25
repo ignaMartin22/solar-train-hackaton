@@ -84,10 +84,6 @@ body{background:var(--ground);color:var(--bone);font-family:var(--f-body);font-s
 .btn:hover svg{transform:translateX(4px)}
 .toast{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);min-height:1.2em}
 .lead{color:var(--muted);font-size:clamp(16px,1.5vw,19px);max-width:46ch;margin:20px 0 0}
-.facts{display:flex;flex-wrap:wrap;margin-top:30px;border-top:1px solid var(--line);padding-top:16px;max-width:600px}
-.fact{display:flex;align-items:center;gap:10px;padding-right:22px;margin-right:22px;border-right:1px solid var(--line);font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;line-height:1.45;color:var(--muted)}
-.fact:last-child{border-right:0}
-.fact svg{width:20px;height:20px;flex:none;color:var(--bone)}
 
 /* station board (lives in the sticky stage); vertically centered to match the cards */
 .board{position:absolute;right:max(24px,env(safe-area-inset-right,0px));top:50%;translate:0 -50%;z-index:3;width:252px;background:rgba(10,10,10,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
@@ -461,19 +457,28 @@ footer .fmark{height:18px;width:auto;max-width:none;flex:none;display:block;opac
   /* layer is ~32vh taller than the hero, so stops are rescaled to keep the same
      absolute fade timing the old vertical gradient had (clear by ~75vh) */
   .hero::before{background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.4) 41%,rgba(0,0,0,0) 57%)}
-  .hero-inner{justify-content:flex-start;gap:6svh;padding-bottom:34svh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .hero-inner{justify-content:flex-start;gap:3svh;padding-bottom:34svh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .mark img{height:17px}
   .topmeta{font-size:9px;letter-spacing:.1em}
   .topbar{grid-template-columns:auto 1fr;gap:10px}
   .topmeta{grid-column:2}
   .topnav{display:none}
+  /* hero copy packs into the top two-thirds; CTAs stack full-width so nothing
+     sits on top of the train, which stays clear in the bottom third */
+  .hero .lead{font-size:15px;margin-top:14px;max-width:34ch}
+  .hero .cta-row{flex-direction:column;align-items:stretch;gap:14px;margin-top:22px}
+  .hero .cta-row .btn{width:100%;justify-content:center}
+  /* secondary CTA demoted to a mono text link under the primary button */
+  .hero .cta-row .btn.ghost{width:auto;justify-content:flex-start;height:auto;padding:2px 2px;
+    box-shadow:none;background:none;color:var(--muted);font-family:var(--f-mono);font-size:12px;letter-spacing:.1em}
+  .hero .cta-row .btn.ghost:hover{background:none;color:var(--bone)}
+  .hero .sub-k{margin-top:10px}
   .chapter{align-items:flex-end;min-height:112svh;padding-block:18svh 8svh}
   .chapter.right .wrap,.chapter .wrap{justify-content:center}
   .card{padding:22px 20px 18px}
   .card dl{display:none}
   .card h3{font-size:32px;margin:10px 0}
   .card p{font-size:15px}
-  .fact{padding-right:14px;margin-right:14px;margin-bottom:10px}
   section{padding-block:88px}
   .final .fcard{padding:40px 20px}
   .tracks{grid-template-columns:1fr}

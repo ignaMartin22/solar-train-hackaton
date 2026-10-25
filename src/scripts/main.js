@@ -500,7 +500,7 @@ if('IntersectionObserver' in window){
       {p:V(-6,1.5,7),       t:V(318,66,-197),    name:'CAM 06 · CIELO · ESTRELLAS'}
     ],
     narrow:[
-      {p:V(-3,3.1,21.5),    t:V(9,4.9,-8),       name:'CAM 01 · LLEGADA'},
+      {p:V(-3,3.2,21.5),    t:V(9,8.5,-8),       name:'CAM 01 · LLEGADA'},
       {p:V(5,24,9),         t:V(9,2.4,-2),       name:'CAM 02 · CENITAL · PANELES'},
       {p:V(5,2.2,15),       t:V(10,3,-28),       name:'CAM 03 · LATERAL BAJA'},
       {p:V(3,2.6,11.5),     t:V(9.5,2.1,-1),     name:'CAM 04 · COSTADO'},
