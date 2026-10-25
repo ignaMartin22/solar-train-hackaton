@@ -212,15 +212,15 @@ if('IntersectionObserver' in window){
     const m=new THREE.Mesh(g,M(col,{roughness:.95,flatShading:true}));
     m.position.z=zOff;m.receiveShadow=true;scene.add(m);return m;
   }
-  mountains(900,120,110,14,-150,0x6b3a2c,1.3).position.x=100;
-  mountains(700,80,100,7,-78,0x3b2a27,4.1).position.x=80;
-  mountains(900,90,100,12,140,0x4a2e26,7.7).rotation.y=Math.PI; // ridge behind the camera side, for the reverse angles
-  const floor=new THREE.Mesh(new THREE.PlaneGeometry(900,500),M(0x1c1714,{roughness:1}));
+  mountains(900,120,110,14,-150,0x4a403d,1.3).position.x=100;
+  mountains(700,80,100,7,-78,0x302b2c,4.1).position.x=80;
+  mountains(900,90,100,12,140,0x3b3433,7.7).rotation.y=Math.PI; // ridge behind the camera side, for the reverse angles
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(900,500),M(0x141110,{roughness:1}));
   floor.rotation.x=-Math.PI/2;floor.position.y=-.02;floor.receiveShadow=true;scene.add(floor);
 
   /* rail line: the train stays near the origin, the ground slides past */
   const line=new THREE.Group();line.rotation.y=0.32;scene.add(line);
-  const ballast=new THREE.Mesh(new THREE.BoxGeometry(700,.35,5),M(0x3a332e,{roughness:1}));
+  const ballast=new THREE.Mesh(new THREE.BoxGeometry(700,.35,5),M(0x2b2724,{roughness:1}));
   ballast.position.set(100,.1,0);ballast.receiveShadow=true;line.add(ballast);
   [-0.78,0.78].forEach(z=>{const r=new THREE.Mesh(new THREE.BoxGeometry(700,.14,.12),steel);r.position.set(100,.42,z);line.add(r);});
   const SL0=-220,SLN=560;
@@ -231,7 +231,7 @@ if('IntersectionObserver' in window){
   placeSleepers(0);
   // platform (left behind once the train departs)
   const platform=new THREE.Group();line.add(platform);
-  const plat=new THREE.Mesh(new THREE.BoxGeometry(30,.9,5),M(0x8d8378,{roughness:.9}));
+  const plat=new THREE.Mesh(new THREE.BoxGeometry(30,.9,5),M(0x57524c,{roughness:.95}));
   plat.position.set(8,.45,-5.4);plat.receiveShadow=true;plat.castShadow=true;platform.add(plat);
   const edge=new THREE.Mesh(new THREE.BoxGeometry(30,.06,.35),accent);edge.position.set(8,.93,-3.1);platform.add(edge);
   // station sign
@@ -242,7 +242,7 @@ if('IntersectionObserver' in window){
   const LOOP=260, LOOP0=-120;
   const props=[];
   const cactusMat=M(0x40573a,{roughness:.9,flatShading:true});
-  const rockMat=M(0x7a4636,{roughness:1,flatShading:true});
+  const rockMat=M(0x59524e,{roughness:1,flatShading:true});
   function cardon(h){
     const g=new THREE.Group();
     const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.32,.38,h,7),cactusMat);trunk.position.y=h/2;trunk.castShadow=true;g.add(trunk);
@@ -267,7 +267,7 @@ if('IntersectionObserver' in window){
   // a white-walled pueblo with a bell tower, passing by on the far side
   {
     const town=new THREE.Group();
-    const wall=M(0xefe6d8,{roughness:.9}),roof=M(0xb4553a,{roughness:.85,flatShading:true});
+    const wall=M(0xefe6d8,{roughness:.9}),roof=M(0x8a5a48,{roughness:.85,flatShading:true});
     for(let i=0;i<16;i++){
       const w=2+rnd()*2.6,h=1.6+rnd()*1.4,d=2+rnd()*2;
       const hx=rnd()*44,hz=-(15+rnd()*16);
@@ -278,7 +278,7 @@ if('IntersectionObserver' in window){
     const t1=new THREE.Mesh(new THREE.BoxGeometry(2.2,7,2.2),wall);t1.position.y=3.5;t1.castShadow=true;tw.add(t1);
     const t2=new THREE.Mesh(new THREE.BoxGeometry(1.7,2.2,1.7),wall);t2.position.y=8.1;tw.add(t2);
     const arch=new THREE.Mesh(new THREE.BoxGeometry(1.75,1,0.6),M(0x2a211b));arch.position.y=8.2;tw.add(arch);
-    const dome=new THREE.Mesh(new THREE.SphereGeometry(.9,16,8,0,Math.PI*2,0,Math.PI/2),M(0xc9a26a,{roughness:.6}));dome.position.y=9.2;tw.add(dome);
+    const dome=new THREE.Mesh(new THREE.SphereGeometry(.9,16,8,0,Math.PI*2,0,Math.PI/2),M(0xa8886a,{roughness:.6}));dome.position.y=9.2;tw.add(dome);
     const cross=new THREE.Mesh(new THREE.BoxGeometry(.08,.7,.08),dark);cross.position.y=10.4;tw.add(cross);
     town.add(tw);
     town.userData.base=60;line.add(town);props.push(town);
@@ -410,23 +410,6 @@ if('IntersectionObserver' in window){
   train.add(bellows);
   const TMID=(2*LEN+GAP)/2-1.5; // train centre in line space once docked (nose ≈ -1.4)
 
-  /* floating 3D slashes + sun ring (they ride with the train so they stay in frame) */
-  const fx=new THREE.Group();line.add(fx);
-  const slashGeo=new THREE.ExtrudeGeometry(poly([[0,0],[.7,0],[2.2,3.2],[1.5,3.2]]),{depth:.35,bevelEnabled:true,bevelSize:.05,bevelThickness:.05,bevelSegments:2});
-  slashGeo.center();
-  const slashMat=M(0xffffff,{roughness:.35,metalness:.1});
-  const slashMatW=M(0x14171c,{roughness:.45,metalness:.1});
-  const slashes=[];
-  [[8,7,-7,1.3],[18,9.5,-12,1.8],[-1,8.5,-14,.9],[27,5.5,-5,1],[12,5.2,4,.55],[34,12,-24,2.4],[22,3.6,7,.5],[-8,4,-6,.8],[40,6,8,1.1]].forEach(([x,y,z,s],i)=>{
-    const m=new THREE.Mesh(slashGeo,i%3===2?slashMatW:slashMat);m.position.set(x,y,z);m.scale.setScalar(s);
-    m.rotation.set(rnd()*.6,rnd()*Math.PI,rnd()*.4);m.castShadow=true;
-    m.userData={by:y,ph:rnd()*6.28,sp:.3+rnd()*.4};fx.add(m);slashes.push(m);
-  });
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(7,.18,16,120),new THREE.MeshBasicMaterial({color:0xffffff}));
-  ring.position.set(30,9,-30);fx.add(ring);
-  const ring2=new THREE.Mesh(new THREE.TorusGeometry(9.5,.05,8,140),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.4}));
-  ring2.position.copy(ring.position);fx.add(ring2);
-
   /* ---------- space layer: stars, dark planet, moon, rocket launch, light-speed streaks ---------- */
   const dpr=Math.min(devicePixelRatio,2);
   function starLayer(n,size,minEl){
@@ -443,8 +426,8 @@ if('IntersectionObserver' in window){
   }
   const stars=starLayer(2200,1.4,9),bright=starLayer(160,2.8,14);
 
-  const PLANET=new THREE.Vector3(240,66,-287);
-  const planet=new THREE.Mesh(new THREE.SphereGeometry(34,64,32),new THREE.MeshStandardMaterial({color:0x2a2e38,roughness:1,emissive:0x0a0c14,fog:false,transparent:true}));
+  const PLANET=new THREE.Vector3(340,105,-360);
+  const planet=new THREE.Mesh(new THREE.SphereGeometry(30,64,32),new THREE.MeshStandardMaterial({color:0x1d212a,roughness:1,emissive:0x0a0c14,fog:false,transparent:true}));
   planet.position.copy(PLANET);scene.add(planet);
   const pglow=new THREE.Sprite(new THREE.SpriteMaterial({map:glow.material.map,color:0x8a93a8,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,opacity:.55,transparent:true}));
   pglow.scale.set(120,120,1);pglow.position.copy(PLANET).add(new THREE.Vector3(0,0,-40));scene.add(pglow);
@@ -496,7 +479,7 @@ if('IntersectionObserver' in window){
   const V=(x,y,z)=>new THREE.Vector3(x,y,z);
   const SHOTS={
     wide:[
-      {p:V(-16.3,3.4,10.9), t:V(-1.4,2.6,-.5),   name:'CAM 01 · ANDÉN'},
+      {p:V(-26,2.0,15.5),   t:V(-5,3.1,-9),     name:'CAM 01 · LLEGADA'},
       {p:V(2.5,17,8.5),     t:V(TMID,2.4,-1.5),  name:'CAM 02 · CENITAL · PANELES'},
       {p:V(7.5,2.6,15),     t:V(TMID+1,2.2,-30), name:'CAM 03 · LATERAL BAJA'},
       {p:V(3.2,2.2,8.8),    t:V(10.6,1.9,-.8),   name:'CAM 04 · COSTADO'},
@@ -504,7 +487,7 @@ if('IntersectionObserver' in window){
       {p:V(-6,1.5,7),       t:V(318,66,-197),    name:'CAM 06 · CIELO · ESTRELLAS'}
     ],
     narrow:[
-      {p:V(-6,4.6,22),      t:V(2,3.2,0),        name:'CAM 01 · ANDÉN'},
+      {p:V(-3,3.1,21.5),    t:V(9,4.9,-8),       name:'CAM 01 · LLEGADA'},
       {p:V(5,24,9),         t:V(9,2.4,-2),       name:'CAM 02 · CENITAL · PANELES'},
       {p:V(5,2.2,15),       t:V(10,3,-28),       name:'CAM 03 · LATERAL BAJA'},
       {p:V(3,2.6,11.5),     t:V(9.5,2.1,-1),     name:'CAM 04 · COSTADO'},
@@ -585,10 +568,10 @@ if('IntersectionObserver' in window){
 
   /* day → night: the ride is one hackathon day — morning departure, night arrival */
   const SKY=[
-    {t:0,   sky:['#79aed8','#a9cfe8','#d7e4e6','#e2d9c4','#e6cba0','#dda67e'], sun:[-170,95],  sunC:0xffe9c2, glow:.7,  dir:[-110,70,-70], dirC:0xfff0d8, dirI:2.6, keyC:0xfff4e0, keyI:1.5,  keyP:[-55,20,30],  hs:0x9cc4e2, hg:0x8a7358, hi:1.0,  fog:0x93a8b2, night:0,   exp:1.06},
-    {t:2,   sky:['#4d94d0','#82b9df','#bcd7e0','#d5d3c4','#e2cfae','#dfb694'], sun:[0,150],    sunC:0xfff3da, glow:.55, dir:[20,120,-60],  dirC:0xfff6e8, dirI:2.7, keyC:0xffffff, keyI:1.35, keyP:[-18,60,26],  hs:0x9cbdd8, hg:0x8a7358, hi:1.0,  fog:0x93a6b0, night:0,   exp:1.06},
-    {t:3.1, sky:['#2e4266','#4a5678','#5e6478','#6f6f7c','#7d7c84','#8b8a90'], sun:[120,50],   sunC:0xe8d9c2, glow:.6,  dir:[80,38,-75],   dirC:0xd8dce8, dirI:2.4, keyC:0xf0f2f8, keyI:1.3,  keyP:[-24,30,25],  hs:0x7488ac, hg:0x2c2c34, hi:.85,  fog:0x6a6a72, night:.08, exp:1.08},
-    {t:4.3, sky:['#010204','#060b16','#0d1526','#141d2e','#1c2534','#24303f'], sun:[230,18],   sunC:0xe8edf4, glow:.8,  dir:[60,30,-80],   dirC:0x9fb2d8, dirI:2.4, keyC:0xe6ecf8, keyI:1.1,  keyP:[-20,26,24],  hs:0x3d5a8a, hg:0x0a0c12, hi:.75,  fog:0x1c2230, night:.32, exp:1.05},
+    {t:0,   sky:['#010307','#050b17','#0c1425','#141d2f','#1b2536','#24303f'], sun:[-160,80],  sunC:0xd4dcea, glow:.45, dir:[-110,55,-70], dirC:0x9fb0ce, dirI:1.6, keyC:0xdfe6f4, keyI:.85,  keyP:[-55,22,30],  hs:0x4a5f8e, hg:0x131519, hi:.6,  fog:0x1a2230, night:.2,  exp:1.02},
+    {t:2,   sky:['#010306','#050a15','#0b1221','#121a29','#172130','#1f2a3a'], sun:[-30,60],   sunC:0xd9e0ec, glow:.4,  dir:[-30,80,-60],  dirC:0x93a6c8, dirI:1.5, keyC:0xe0e7f5, keyI:.8,   keyP:[-24,42,26],  hs:0x43577f, hg:0x101217, hi:.55, fog:0x151c29, night:.3,  exp:1.02},
+    {t:3.1, sky:['#010204','#04080f','#0a1019','#101620','#131a26','#1a2330'], sun:[90,40],    sunC:0xdde4f0, glow:.35, dir:[70,36,-75],   dirC:0x8a9cba, dirI:1.3, keyC:0xe2e8f5, keyI:.7,   keyP:[-24,30,25],  hs:0x3a4c74, hg:0x0b0d12, hi:.5,  fog:0x10151f, night:.5,  exp:1.01},
+    {t:4.3, sky:['#010204','#060b16','#0d1526','#141d2e','#1c2534','#24303f'], sun:[230,18],   sunC:0xe8edf4, glow:.5,  dir:[60,30,-80],   dirC:0x8fa4c8, dirI:1.2, keyC:0xdfe6f5, keyI:.65,  keyP:[-20,26,24],  hs:0x32456b, hg:0x080a10, hi:.45, fog:0x131a26, night:.7,  exp:1.0},
     {t:5.2, sky:['#020409','#060b1a','#0d1528','#1c2740','#2e3648','#3a4250'], sun:[250,-30],  sunC:0xdde4f0, glow:0,   dir:[-50,60,-40],  dirC:0x5a70a8, dirI:.55, keyC:0x93aad8, keyI:.5,   keyP:[-16,30,24],  hs:0x243352, hg:0x0a0908, hi:.5,   fog:0x0a1018, night:.85, exp:1.0},
     {t:6,   sky:['#010204','#04070f','#080f1c','#0d1524','#141c2c','#1a2333'], sun:[260,-70],  sunC:0xdde4f0, glow:0,   dir:[-50,60,-40],  dirC:0x4a5f98, dirI:.4,  keyC:0x7f9bc8, keyI:.4,   keyP:[-16,30,24],  hs:0x1a2640, hg:0x05060a, hi:.45,  fog:0x05080f, night:1,   exp:.97},
   ];
@@ -647,17 +630,15 @@ if('IntersectionObserver' in window){
 
     // floating objects
     const tt=reduce?0:t;
-    slashes.forEach(s=>{s.position.y=s.userData.by+Math.sin(tt*s.userData.sp+s.userData.ph)*.6;if(!reduce)s.rotation.y+=.004*s.userData.sp;s.rotation.x=Math.sin(tt*.4+s.userData.ph)*.25;});
-    ring.rotation.y=Math.sin(tt*.3)*.5;ring.rotation.x=Math.cos(tt*.25)*.2;
-    ring2.rotation.y=-Math.sin(tt*.22)*.6;ring2.rotation.x=.3+Math.sin(tt*.3)*.15;
     if(!reduce){const a=pg.attributes.position.array;for(let i=0;i<N;i++){a[i*3+1]+=pv[i]*.02;a[i*3]+=(speed*.02-.01);if(a[i*3+1]>32)a[i*3+1]=0;if(a[i*3]>100)a[i*3]-=140;}pg.attributes.position.needsUpdate=true;}
 
     // space: twinkle, rocket launch cycle, light speed — all fades in as night falls
     applySky(shotF,t);
     bright.material.opacity=(.75+.25*Math.sin(tt*2.3))*nightK;
     pring.rotation.z=.2+tt*.01;
-    planet.material.opacity=nightK;moon.material.opacity=nightK;
-    pglow.material.opacity=.55*nightK;pring.material.opacity=.22*nightK;pring2.material.opacity=.5*nightK;
+    const nk2=nightK*Math.sqrt(nightK);
+    planet.material.opacity=.7*nk2;moon.material.opacity=.8*nk2;
+    pglow.material.opacity=.22*nk2;pring.material.opacity=.09*nk2;pring2.material.opacity=.2*nk2;
     dust.material.opacity=.15+.7*nightK;beams.forEach(b=>b.intensity=.3+2.2*nightK);
     lampW.opacity=lampR.opacity=.35+.65*nightK; // lamps, cabin light and laptop screens glow as night falls
     innerMat.color.copy(innerBase).multiplyScalar(.8+.2*nightK);scrMat.color.copy(scrBase).multiplyScalar(.5+.5*nightK);
@@ -710,7 +691,7 @@ if('IntersectionObserver' in window){
     // HUD
     const shot=Math.round(shotF);
     if(shot!==lastShot){lastShot=shot;camText.textContent=shots[Math.min(shot,shots.length-1)].name;nextEl.textContent=NEXT[Math.min(shot,NEXT.length-1)];camEl.classList.toggle('on',shotF>.5);
-      const ch=chapters[shot-1];setBoardSide(shot>chapters.length?'off':!ch?'right':ch.classList.contains('center')?'off':ch.classList.contains('right')?'left':'right');}
+      const ch=chapters[shot-1];setBoardSide(shot>chapters.length?'off':!ch?'off':ch.classList.contains('center')?'off':ch.classList.contains('right')?'left':'right');}
     progEl.style.width=(Math.min(shotF/chapters.length,1)*100).toFixed(1)+'%';
     // the platform clock runs on hackathon time: 08:00 departure → ~23:30 arrival
     const hr=8+shotF/(chapters.length+1)*15.5;

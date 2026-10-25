@@ -62,10 +62,13 @@ cuerpo 16–19px, labels 10.5–12px.
 - **Botones:** 56px de alto, padding 0 28px, Inter mayúsculas `.04em`.
   Primario: fondo blanco, texto negro, sin borde. Secundario: transparente,
   texto blanco, borde `#fff3`. Flecha `→` en CTAs, `↗` para externos.
-- **Esquirlas:** paralelogramos inclinados 24°, ahora en blanco a 5–8% de opacidad.
+- **Minimalismo primero:** la interfaz es solo tipografía mono + una línea de
+  datos. Sin barras sueltas, esquirlas ni tramas de puntos: el cielo 3D ya da
+  la textura (estrellas).
 - **El sol/luna:** disco pálido `#f0f2f6` bajo los cerros, con halo frío.
-- **El planeta:** esfera gris oscuro, anillo blanco tenue.
-- **Puntillado (halftone):** trama de puntos blancos sutiles en el cielo.
+- **El planeta:** esfera oscura casi imperceptible, lejos; solo crece con la
+  noche y jamás compite con el texto del hero.
+- **Viñeta:** negro fuerte en los bordes del viewport 3D — encuadre de cine.
 - **Interfaz de misión:** esquinas de encuadre, mira, `CAM 03 · LATERAL BAJA`.
 - **Easing:** `cubic-bezier(.16,1,.3,1)`; duraciones .16s/.32s/.9s.
 - **No hacemos:** ningún color que no sea escala de grises en la interfaz,
@@ -86,9 +89,14 @@ cuerpo 16–19px, labels 10.5–12px.
 
 - **Tren:** blanco con franja grafito `#111318` en silueta de sierra, ventanas
   oscuras, paneles solares en el techo, chevrons negros en el quitanieves.
-- **Entorno:** cerros, cardones, rocas, postes, andén y pueblito con campanario.
-- **Cielo:** noche fría y desaturada — negro profundo con estrellas, planeta
-  gris con anillos blancos, luna, cohete genérico, salto a la velocidad de la luz.
+  Es lo más brillante del cuadro en todo momento.
+- **Entorno:** cerros y rocas desaturadas (grises fríos), cardones, postes,
+  andén y pueblito con campanario — territorio, no interfaz.
+- **Cielo:** la escena empieza en hora azul y cae a noche — negro profundo,
+  poca luz de relleno, sombras duras, estrellas que aparecen de a poco, planeta
+  lejano, luna, cohete genérico, salto a la velocidad de la luz.
+- **Hero:** plano bajo, largo y lento — el tren se recuesta a la derecha y el
+  título respira a la izquierda. Sin cartel ni adornos: solo la escena.
 - **Vistas:** cinco ángulos ligados al scroll + una mirada al cielo.
 
 ## Marcas de terceros
