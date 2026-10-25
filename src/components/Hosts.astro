@@ -1,0 +1,48 @@
+---
+const hosts = [
+  {
+    n: "01",
+    name: "Franco Durán",
+    role: "Host principal",
+    tags: ["Ambassador SpaceXAI", "Founder jujuy.dev"],
+    bio: "Impulsa la comunidad tech del norte y este viaje a bordo del Tren Solar.",
+  },
+  {
+    n: "02",
+    name: "Arturo Grande",
+    role: "Co-host",
+    tags: ["DevRel en Celo", "Founder DESAFIA", "Embajador SpaceXAI"],
+    bio: "Product builder desde Salta. 12 hackathons internacionales ganados.",
+  },
+  {
+    n: "03",
+    name: "Facundo Padilla",
+    role: "Co-host",
+    tags: ["Founder SaltaDev", "AI SWE Manager en FADUA"],
+    bio: "Antes, ingeniero en Santander Tecnología. Comunidades y talento tech en el norte.",
+  },
+];
+---
+
+<section class="hosts" id="hosts">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">03 — Quiénes somos</div>
+        <h3 class="sec">El equipo detrás del <em>Tren Solar.</em></h3>
+      </div>
+      <p>Un ambassador SpaceXAI, builders y la comunidad jujuy.dev. Armamos este hackathon para que el mejor talento técnico del país tenga un escenario a su altura.</p>
+    </div>
+    <ul class="host-grid">
+      {hosts.map((h) => (
+        <li class="host">
+          <div class="host-k">Host · {h.n}</div>
+          <h4>{h.name}</h4>
+          <div class="host-role">{h.role}</div>
+          <p>{h.bio}</p>
+          <ul class="host-tags">{h.tags.map((t) => <li>{t}</li>)}</ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

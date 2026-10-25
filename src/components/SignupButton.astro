@@ -1,10 +1,16 @@
 ---
-// Shared CTA + toast pair. main.js binds .js-signup and writes into the
+// Pre-Hackatón CTA + toast pair. main.js binds .js-signup and writes into the
 // sibling .toast, so both elements must stay together inside a .cta-row.
+interface Props {
+  label?: string;
+  href?: string;
+  ghost?: boolean;
+}
+const { label = "Ir al Pre-Hackatón", href = "#como-se-entra", ghost = false } = Astro.props;
 ---
 
-<a class="btn js-signup" href="#inscripcion">
-  Inscribite en la Pre-Hackatón
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+<a class:list={["btn js-signup", { ghost }]} href={href}>
+  {label}
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
 </a>
 <span class="toast" role="status" aria-live="polite"></span>

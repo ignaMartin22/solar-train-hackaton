@@ -20,10 +20,12 @@ estrellas, un planeta oscuro, un cohete que despega.
 - Eyebrow de marca: `SPACEXAI · TREN SOLAR · JUJUY`.
 - Título del evento: **SpaceXAI Hackathon Argentina**.
 - Datos en JetBrains Mono, mayúsculas, interletrado .18em (`01 — QUÉ ES`,
-  `ESTACIÓN 1 DE 6`, `28–29 NOV 2026`).
+  `ESTACIÓN 1 DE 6`, `NOV 2026 · A CONFIRMAR`).
 - **No hacemos:** inventar cifras, prometer premios o fechas sin confirmar.
-  Datos permitidos (sitio del sponsor): 28–29 NOV 2026 a confirmar,
-  Quebrada de Humahuaca, 70 cupos, 48h.
+  Datos permitidos (contenido que vino de `main`): un solo día, fecha
+  objetivo nov 2026 sujeta a la confirmación del charter, Quebrada de
+  Humahuaca, 70 cupos (35 jujeños por Pre-Hackatón + 35 invitados
+  especiales), tramo Volcán → Tilcara.
 
 ## Color
 
@@ -76,14 +78,34 @@ cuerpo 16–19px, labels 10.5–12px.
 
 ## Componentes de la landing
 
-- **Topbar / footer:** wordmark oficial SpaceX (PNG blanco, ~24px), sin recrear.
-- **Botón principal:** blanco sobre negro, flecha `→`, radio 0.
+- **Topbar / footer:** wordmark oficial SpaceX (PNG blanco, ~24px/18px), sin
+  recrear. Footer en columnas mono (links de secciones + marca), separado por
+  una línea `#ffffff1a`.
+- **Botón principal:** blanco sobre negro, flecha `→`, radio 0, 56px.
+  Secundario (`.btn.ghost`): transparente, borde `#fff3`, misma altura.
 - **Cartel del andén:** panel negro translúcido, filas clave/valor en mono.
-- **Tarjeta de parada:** `Parada N · Estación`, título Grotesk con una frase atenuada.
-- **Ticket:** fondo blanco, girado 4°, filas con línea punteada.
+- **Tarjeta de parada:** stopline mono (`01 — Qué es`, `Etapas 01 · 02`,
+  `Última estación`), título Grotesk con una frase atenuada.
 - **Franja animada:** banda blanca inclinada −2°, texto negro separado por `//`.
 - **Recorrido:** mapa SVG monocromo con geografía real OSM (Volcán → Tilcara),
-  card flotante de estación, chips, luz blanca recorriendo el trazado.
+  barra de estación bajo el mapa, chips de radio 2, luz blanca recorriendo el
+  trazado.
+- **Hosts / Cómo se entra:** grillas de tarjetas `#0a0a0a` borde `#fff3`
+  radio 8 sobre negro plano; labels mono uppercase, nombres en Grotesk mixed
+  case; chips de tags con borde `#fff3`; numeral fantasma blanco al 5% como
+  única gráfica. Nada de esquirlas ni barras sueltas.
+- **FAQ:** `<details>` con divisores `#ffffff1a`, pregunta en Grotesk 600,
+  índice mono, `+` que rota a `×`.
+- **Waitlist:** formulario en la tarjeta final — input mono de 56px, radio 0,
+  borde `#fff3` que pasa a blanco al foco; notas laterales `#0a0a0a` con
+  label mono.
+- **Boleto holográfico (`.tk-*`):** talón grafito + troquel blanco frío,
+  unidos por muesca y perforación; tilt 3D con el puntero; foil plateado
+  frío — shader vgpu (`.tk-holo`) o degradé CSS plateado (`.tk-foil`) como
+  fallback; moneda jujuy.dev en grafito. El arte de referencia
+  (`ticket-art.jpg`, naranja viejo) se neutraliza por CSS con
+  `grayscale(1)`: no se reemplaza el archivo. Todo el texto del boleto en
+  mono/Grotesk, ningún naranja.
 
 ## Escena 3D
 

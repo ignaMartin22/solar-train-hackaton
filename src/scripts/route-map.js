@@ -11,6 +11,11 @@ if (section) {
   const dk = section.querySelector(".rmap-dk");
   const dn = section.querySelector(".rmap-dn");
   const dd = section.querySelector(".rmap-dd");
+  const scroller = section.querySelector(".rmap-scroll");
+  const chips = section.querySelector(".rmap-chips");
+  // drop the edge fade once the map is scrolled to its end
+  const edge = () => scroller.classList.toggle("end", scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 2);
+  scroller?.addEventListener("scroll", edge, { passive: true });
 
   const select = (id, focus) => {
     ids.forEach((k) => groups[k].forEach((el) => {
@@ -23,7 +28,16 @@ if (section) {
       if (dn) dn.textContent = ref.dataset.name;
       if (dd) dd.textContent = ref.dataset.desc;
     }
-    if (focus) groups[id].find((el) => el.classList.contains("rmap-chip"))?.focus();
+    const chip = groups[id].find((el) => el.classList.contains("rmap-chip"));
+    if (focus) chip?.focus();
+    // narrow screens: the map and the chip row scroll sideways — bring the selection into view
+    if (scroller && scroller.scrollWidth > scroller.clientWidth) {
+      const dot = groups[id].find((el) => el.classList.contains("rmap-dot"));
+      if (dot) scroller.scrollTo({ left: dot.offsetLeft - scroller.clientWidth / 2 });
+    }
+    if (chips && chip && chips.scrollWidth > chips.clientWidth) {
+      chips.scrollTo({ left: chip.offsetLeft - chips.offsetLeft - (chips.clientWidth - chip.offsetWidth) / 2, behavior: "smooth" });
+    }
   };
 
   all.forEach((el) => {

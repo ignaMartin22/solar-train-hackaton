@@ -1,24 +1,37 @@
 ---
 import SignupButton from "./SignupButton.astro";
+import Ticket from "./Ticket.astro";
 ---
 
-<section class="final" id="inscripcion">
+<section class="final" id="waitlist">
   <div class="wrap">
     <div class="fcard">
       <div>
-        <div class="eyebrow">Primera parada</div>
+        <div class="eyebrow">05 — Próxima parada</div>
         <h3 class="sec">Subite antes de <em>que salga.</em></h3>
-        <p>La Pre-Hackatón es el primer paso para viajar. Inscribite, sumá a tu equipo y empezá a darle forma a tu idea.</p>
-        <div class="cta-row">
-          <SignupButton />
+        <p>Buildeá con los mejores de Argentina. Anotate en la waitlist y te avisamos cuando se abra cada tanda de cupos.</p>
+        <form class="wl" novalidate>
+          <label class="sr" for="wl-email">Email</label>
+          <input id="wl-email" name="email" type="email" autocomplete="email" placeholder="tu@mail.com" required>
+          <button class="btn" type="submit">Sumarme
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </button>
+          <span class="toast" role="status" aria-live="polite">Sin spam. Solo noticias del tren.</span>
+        </form>
+      </div>
+      <div class="fside">
+        <div class="fnote">
+          <div class="fnote-k">¿Sos de Jujuy?</div>
+          <p>Tu ticket se gana en el Pre-Hackatón.</p>
+          <div class="cta-row"><SignupButton label="Ir al Pre" ghost /></div>
+        </div>
+        <div class="fnote">
+          <div class="fnote-k">¿Te invitaron?</div>
+          <p>Revisá tu mail: la invitación trae tu link personal.</p>
         </div>
       </div>
-      <div class="ticket" aria-hidden="true">
-        <div class="t-h">SpaceXAI<br>Hackathon</div>
-        <div class="t-r"><span>PASAJERO</span><span>BUILDER</span></div>
-        <div class="t-r"><span>TRAMO</span><span>PRE-HACKATÓN</span></div>
-        <div class="t-r"><span>TRACCIÓN</span><span>SOLAR</span></div>
-        <div class="t-b">BUILD · INNOVATE · TRAVEL FURTHER</div>
+      <div class="fticket">
+        <Ticket />
       </div>
     </div>
   </div>
