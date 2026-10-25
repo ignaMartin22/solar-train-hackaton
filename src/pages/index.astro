@@ -5,7 +5,10 @@ import Hero from "../components/Hero.astro";
 import Chapter from "../components/Chapter.astro";
 import Marquee from "../components/Marquee.astro";
 import Route from "../components/Route.astro";
+import Hosts from "../components/Hosts.astro";
+import Join from "../components/Join.astro";
 import Signup from "../components/Signup.astro";
+import Faq from "../components/Faq.astro";
 import Footer from "../components/Footer.astro";
 ---
 
@@ -18,65 +21,68 @@ import Footer from "../components/Footer.astro";
 
       <Chapter
         cam={1}
-        stop="Parada 1 · Volcán"
-        title="Energía"
-        em="renovable."
-        text="Mirá el techo: cada vagón lleva sus paneles. El tren avanza con la luz del sol, y la hackatón se construye con lo que el lugar ofrece."
+        id="que-es"
+        stop="01 — Qué es"
+        title="Construir AI para"
+        em="entender el universo."
+        text="La misión de SpaceXAI es acelerar el descubrimiento científico. Acá la bajamos a tierra: un hackathon de builders en Argentina, a bordo del Tren Solar. Empezando por la Quebrada."
         facts={[
-          ["Tracción", "Solar"],
-          ["Paneles", "En el techo de cada vagón"],
-          ["Emisiones", "Cero en marcha"],
+          ["Build", "1 día"],
+          ["Builders", "70"],
+          ["Invitados", "35"],
+          ["Tren", "1 solar"],
         ]}
       />
 
       <Chapter
         cam={2}
+        id="experiencia"
         variant="right"
-        stop="Parada 2 · Purmamarca"
-        title="Lugares"
-        em="reales."
-        text="Los problemas no llegan en un PDF. Los ves desde la ventanilla, entre cardones y cerros de colores, y los conversás en el andén."
+        stop="02 — Experiencia"
+        title="Altura. Sol."
+        em="Un deadline que se mueve con las vías."
+        text="Salís de madrugada. Buildeás mientras cambia el paisaje. Presentás con los cerros de fondo."
         facts={[
-          ["Altitud", "2.190 m s. n. m."],
-          ["Paisaje", "Quebrada de Humahuaca"],
-          ["Desafíos", "Del territorio, en el territorio"],
+          ["Tren", "Tren Solar de la Quebrada"],
+          ["Tramo", "Volcán → Tilcara"],
+          ["Altura", "2.500 m s. n. m."],
         ]}
       />
 
       <Chapter
         cam={3}
-        stop="Parada 3 · Tilcara"
-        title="Construir"
-        em="juntos."
-        text="Devs, diseño, negocio y gente de la comunidad en el mismo vagón, trabajando sobre la misma idea mientras el paisaje pasa."
+        stop="Etapas 01 · 02"
+        title="Arranca el tren,"
+        em="arranca el reloj."
+        text="Embarcás con el brief en la mano. En el tramo largo buildeás con la ventana más linda de Argentina al costado, y los mentores circulan vagón por vagón."
         facts={[
-          ["Equipos", "Multidisciplinarios"],
-          ["Formato", "Hackatón en movimiento"],
-          ["Salida", "Un prototipo funcionando"],
+          ["01", "La salida"],
+          ["02", "El tramo largo"],
+          ["Mentores", "Vagón por vagón"],
         ]}
       />
 
       <Chapter
         cam={4}
         variant="right"
-        stop="Parada 4 · Órbita"
-        title="Ideas que viajan"
-        em="más allá."
-        text="La Quebrada es la plataforma de lanzamiento. Lo que construyas a bordo puede llegar mucho más lejos que la última estación."
+        stop="Etapas 03 · 04"
+        title="Demos con los"
+        em="cerros de fondo."
+        text="Cada proyecto se muestra frente a todos los que viajan. Todo pasa en un solo día."
         facts={[
-          ["Altitud", "De 2.460 m a lo que imagines"],
-          ["Propulsión", "Solar + ideas"],
-          ["Ventana", "Abre con la Pre-Hackatón"],
+          ["03", "Las demos"],
+          ["04", "El cierre"],
+          ["Duración", "Un solo día"],
         ]}
       />
 
       <Chapter
         cam={5}
         variant="center"
-        stop="Parada 5 · Tilcara"
-        title="Más que una hackatón,"
-        em="un viaje."
-        text="Resolvés desafíos reales mientras el tren recorre la Quebrada. Cada equipo baja con algo construido."
+        stop="Última estación"
+        title="Un día sin señal,"
+        em="sin excusas."
+        text="Solo vos, tu equipo y lo que puedan construir antes de la última estación. Nadie vuelve igual."
       />
 
     </div>
@@ -86,7 +92,10 @@ import Footer from "../components/Footer.astro";
 
   <main>
     <Route />
+    <Hosts />
+    <Join />
     <Signup />
+    <Faq />
   </main>
 
   <Footer />

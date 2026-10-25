@@ -1,6 +1,7 @@
 ---
 interface Props {
   cam: number;
+  id?: string;
   variant?: "right" | "center";
   stop: string;
   title: string;
@@ -9,11 +10,11 @@ interface Props {
   facts?: [string, string][];
 }
 
-const { cam, variant, stop, title, em, text, facts = [] } = Astro.props;
+const { cam, id, variant, stop, title, em, text, facts = [] } = Astro.props;
 const center = variant === "center";
 ---
 
-<article class:list={["chapter", variant]} data-cam={cam} id={`parada-${cam}`}>
+<article class:list={["chapter", variant]} data-cam={cam} id={id ?? `parada-${cam}`}>
   <div class="wrap">
     <div class={center ? "big" : "card"}>
       <div class="stopline" style={center ? "justify-content:center" : undefined}>{stop}</div>

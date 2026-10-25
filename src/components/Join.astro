@@ -1,0 +1,54 @@
+---
+import SignupButton from "./SignupButton.astro";
+
+const steps = [
+  { n: "01", t: "Anotate", d: "Dejá tu mail en la waitlist. Es la única lista que miramos para avisar novedades y abrir cupos." },
+  { n: "02", t: "Ganá tu lugar", d: "Si sos de Jujuy, competís en el Pre-Hackatón. Los invitados especiales reciben su invitación personal.", pre: true },
+  { n: "03", t: "Confirmá", d: "Te llega tu ticket con los datos del viaje. Confirmás, armás el bolso y listo." },
+];
+---
+
+<section class="join" id="como-se-entra">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">04 — Cómo se entra</div>
+        <h3 class="sec">Hay dos formas de <em>subirte.</em></h3>
+      </div>
+      <p><strong>Ninguna es llenando un formulario acá.</strong> 70 lugares en total. La mitad se gana en Jujuy. La otra mitad llega por invitación. En ambos casos, el primer paso es la waitlist.</p>
+    </div>
+
+    <ol class="steps">
+      {steps.map((s) => (
+        <li class="step">
+          <div class="step-k">Paso {s.n}</div>
+          <h4>{s.t}</h4>
+          <p>{s.d}</p>
+          {s.pre && <div class="cta-row"><SignupButton label="Ir al Pre" ghost /></div>}
+        </li>
+      ))}
+    </ol>
+
+    <div class="tracks">
+      <article class="trackc">
+        <div class="track-n">35</div>
+        <div class="track-k">Cupos · vía Pre-Hackatón</div>
+        <h4>Jujeños</h4>
+        <ul>
+          <li>Abierto a equipos de Jujuy.</li>
+          <li>Se compite en el Pre-Hackatón, que tiene su propia página y sus propias reglas.</li>
+          <li>Los 35 mejores suben al tren.</li>
+        </ul>
+      </article>
+      <article class="trackc">
+        <div class="track-n">35</div>
+        <div class="track-k">Cupos · por invitación</div>
+        <h4>Invitados especiales</h4>
+        <ul>
+          <li>Personas invitadas por su trayectoria: builders, referentes y figuras del ecosistema.</li>
+          <li>No hay postulación abierta. Si te buscamos, te llega un mail con tu link personal.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>

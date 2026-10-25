@@ -1,0 +1,30 @@
+---
+const faqs = [
+  ["¿Acá subo mi proyecto?", "No. Esta página explica el hackathon y te deja anotarte en la waitlist. No se suben proyectos, repos, demos ni videos acá. Si sos de Jujuy, la competencia pasa en el Pre-Hackatón, que es otra página."],
+  ["¿Cuándo es?", "Es un solo día, con fecha objetivo en noviembre de 2026, sujeta a la confirmación del charter del Tren Solar. El itinerario lo comunicamos más adelante a la waitlist."],
+  ["¿Dónde es exactamente?", "A bordo del Tren Solar de la Quebrada, en la Quebrada de Humahuaca, Jujuy. El recorrido exacto y las estaciones se comunican con el ticket."],
+  ["¿Cuántos cupos hay?", "70. 35 para jujeños que clasifican por el Pre-Hackatón y 35 para invitados especiales."],
+  ["¿Cómo consigo una invitación?", "No hay postulación abierta. Los invitados especiales se eligen uno por uno. Si querés que te tengamos en el radar, anotate en la waitlist."],
+  ["¿Qué tengo que llevar?", "Tu notebook y abrigo. La Quebrada no perdona. El resto lo vemos nosotros."],
+  ["¿Puedo ir solo?", "Si sos de Jujuy, el camino es el Pre-Hackatón. Los invitados especiales vienen por invitación personal, no como equipo."],
+];
+---
+
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">06 — FAQ</div>
+        <h3 class="sec">Preguntas que nos hicieron <em>antes de que preguntes.</em></h3>
+      </div>
+    </div>
+    <div class="faq-list">
+      {faqs.map(([q, a], i) => (
+        <details open={i === 0}>
+          <summary><span class="faq-n">{String(i + 1).padStart(2, "0")}</span>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

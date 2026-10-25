@@ -1,13 +1,26 @@
 import * as THREE from 'three';
 
 /* ---------- sign-up link ---------- */
-const INSCRIPCION_URL = ""; // pegá acá el link del formulario de inscripción
+const INSCRIPCION_URL = ""; // pegá acá el link de la página del Pre-Hackatón
+const WAITLIST_URL = ""; // pegá acá el endpoint (POST) que recibe los mails de la waitlist
 document.querySelectorAll('.js-signup').forEach(a=>{
   if(INSCRIPCION_URL){ a.href=INSCRIPCION_URL; a.target="_blank"; a.rel="noopener"; return; }
   a.addEventListener('click',e=>{
     if(a.closest('.hero')) return; // hero button scrolls to the closing block
     e.preventDefault();
-    a.parentElement.querySelector('.toast').textContent='Las inscripciones abren muy pronto. Volvé a este link en unos días.';
+    a.parentElement.querySelector('.toast').textContent='El Pre-Hackatón abre muy pronto. Volvé a este link en unos días.';
+  });
+});
+
+/* ---------- waitlist ---------- */
+document.querySelectorAll('form.wl').forEach(f=>{
+  if(WAITLIST_URL){ f.action=WAITLIST_URL; f.method='post'; }
+  f.addEventListener('submit',e=>{
+    const toast=f.querySelector('.toast'),email=f.elements.email;
+    if(!email.checkValidity()){ e.preventDefault(); toast.textContent='Revisá el mail: parece incompleto.'; email.focus(); return; }
+    if(WAITLIST_URL) return;
+    e.preventDefault();
+    toast.textContent='La waitlist abre muy pronto. Volvé en unos días.';
   });
 });
 

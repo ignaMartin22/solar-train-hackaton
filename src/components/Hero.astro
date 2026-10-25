@@ -5,29 +5,36 @@ import SignupButton from "./SignupButton.astro";
 <header class="hero">
   <div class="wrap hero-inner">
     <div class="topbar rise d1">
-      <a class="mark" href="#top" aria-label="Solar Train Hackathon">
+      <a class="mark" href="#top" aria-label="SpaceXAI Hackathon Argentina">
         <svg viewBox="0 0 48 38" aria-hidden="true"><path d="M14 0h11L18 15h10L35 0h11L30 38H19l6-14H15L9 38H-2z" fill="#F4F0EA" transform="translate(2 0)"/><path d="M17 15h12l-3 9H13z" fill="#FF5A1F" transform="translate(2 0)"/></svg>
-        <span>Solar Train<br>Hackathon</span>
+        <span>SpaceXAI<br>Hackathon AR</span>
       </a>
-      <nav class="topnav" aria-label="Accesos directos">
-        <a href="#route">Recorrido</a>
-        <a href="#inscripcion">Inscribite</a>
+      <nav class="topnav" aria-label="Secciones">
+        <a href="#que-es">Qué es</a>
+        <a href="#experiencia">Experiencia</a>
+        <a href="#hosts">Hosts</a>
+        <a href="#como-se-entra">Cómo se entra</a>
+        <a href="#faq">FAQ</a>
       </nav>
       <span class="slashes" aria-hidden="true">///</span>
     </div>
     <div class="copy">
-      <div class="kicker rise d2"><i></i>Solar Train</div>
+      <div class="kicker rise d2"><i></i>SpaceXAI</div>
       <h1 class="word rise d2">Hackathon</h1>
-      <div class="sub-k rise d3">A travelling experience</div>
-      <p class="headline rise d3">El Tren Solar <em>está llegando.</em></p>
-      <p class="lead rise d4">Una hackatón a bordo de un tren que corre con el sol, entre los cerros de Jujuy. Antes de subir, empieza la Pre-Hackatón: armá tu equipo y tu idea.</p>
+      <div class="sub-k rise d3">Argentina · Tren Solar · Jujuy</div>
+      <p class="headline rise d3">AI en la <em>frontera.</em></p>
+      <p class="lead rise d4">Un día a bordo del Tren Solar de la Quebrada. 70 builders. Un solo viaje.</p>
       <div class="cta-row rise d5">
-        <SignupButton />
+        <a class="btn" href="#waitlist">
+          Sumarme a la waitlist
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+        </a>
+        <SignupButton label="Soy de Jujuy: ir al Pre" ghost />
       </div>
       <div class="facts rise d5">
-        <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2 5 14h6l-1 8 8-12h-6z"/></svg>Energía<br>renovable</div>
+        <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 2v5M16 2v5"/></svg>Nov 2026<br>1 día</div>
         <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m2 20 7-11 4 6 3-4 6 9z"/><path d="m7.5 11.5 1.5 1 1.5-1"/></svg>Quebrada de<br>Humahuaca</div>
-        <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="9" r="2.2"/><circle cx="19" cy="9" r="2.2"/><path d="M6.5 20a5.5 5.5 0 0 1 11 0M1.5 19a3.6 3.6 0 0 1 5-3.3M22.5 19a3.6 3.6 0 0 0-5-3.3"/></svg>Build<br>together</div>
+        <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="9" r="2.2"/><circle cx="19" cy="9" r="2.2"/><path d="M6.5 20a5.5 5.5 0 0 1 11 0M1.5 19a3.6 3.6 0 0 1 5-3.3M22.5 19a3.6 3.6 0 0 0-5-3.3"/></svg>70<br>cupos</div>
       </div>
     </div>
   </div>
