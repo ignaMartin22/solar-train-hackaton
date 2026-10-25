@@ -36,11 +36,11 @@ fn fbm(x: f32) -> f32 {
 
   // night sky continuing the orbit shot: page-ground at the top edge melts into deep blue
   var col = mix(vec3f(0.043, 0.055, 0.075), vec3f(0.050, 0.075, 0.145), smoothstep(0.0, 0.75, uv.y));
-  // last ember of the day, low on the right horizon — the sun already set on the ride
+  // cold moonlight low on the right horizon — the sun already set on the ride
   let sun = vec2f(0.78 * aspect, 0.55);
   let dSun = distance(vec2f(uv.x * aspect, uv.y), sun);
-  col += vec3f(0.55, 0.20, 0.10) * exp(-dSun * 6.0) * 0.14;
-  col += vec3f(1.0, 0.55, 0.28) * exp(-dSun * 26.0) * 0.20;
+  col += vec3f(0.30, 0.36, 0.48) * exp(-dSun * 6.0) * 0.14;
+  col += vec3f(0.75, 0.82, 0.95) * exp(-dSun * 26.0) * 0.18;
   // stars: hashed points with a slow twinkle, denser higher in the sky
   let sg = uv * vec2f(aspect, 1.0) * 150.0;
   let sH = hash(floor(sg.x) * 61.7 + floor(sg.y) * 113.1);

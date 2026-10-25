@@ -1,83 +1,99 @@
-# Solar Train Hackathon · Design System
+# SpaceXAI Hackathon Argentina · Design System
 
-Guía de marca para todo lo que hagamos del evento: landing, flyers, posteos, credenciales y slides. Si algo no está acá, mirá cómo lo resuelve `index.html`, porque es la referencia viva.
+Guía de marca para la landing del evento. Referencia de branding: el sitio del
+sponsor confirmado (`spacexai-hackathon.vercel.app`) — monocromo estricto,
+Space Grotesk / Inter / JetBrains Mono, formas casi rectas. La narrativa del
+Tren Solar de la Quebrada (andén, paradas, recorrido geográfico) se mantiene.
 
 ## La idea
 
-Una hackatón a bordo del Tren Solar de la Quebrada de Humahuaca, en Jujuy. La marca junta paisaje real (cerros de colores, vías, cardones, pueblos con campanario, atardecer) con una capa gráfica dura y rápida en naranja y tinta, y un cielo de ciencia ficción encima: estrellas, un planeta oscuro con anillos, un cohete que despega.
+Una hackatón a bordo del Tren Solar de la Quebrada de Humahuaca, en Jujuy,
+bajo la marca del sponsor SpaceX / SpaceXAI. El paisaje real (cerros, cardones,
+pueblos con campanario) convive con una noche fría de ciencia ficción:
+estrellas, un planeta oscuro, un cohete que despega.
 
 **Tierra abajo, espacio arriba. El tren es el puente.**
 
 ## Voz
 
-- Frases cortas, imperativas, de a tres: *Build. Innovate. Travel further.* / *Real problems. Real places. Real impact.*
-- Bilingüe: español para lo local (*Ideas que viajan lejos*, *Inscribite*, *Subite antes de que salga*) e inglés para el kicker de marca (*A travelling experience*).
-- Los datos se dicen planos y con ícono: fecha, lugar, energía.
-- Vocabulario de viaje y de misión: andén, parada, tramo, pasajero, órbita, ventana de lanzamiento.
-- **No hacemos:** inventar cifras, prometer premios o fechas sin confirmar, o nombrar sponsors sin su permiso.
+- Frases cortas, español rioplatense, tono de misión/frontera.
+- Eyebrow de marca: `SPACEXAI · TREN SOLAR · JUJUY`.
+- Título del evento: **SpaceXAI Hackathon Argentina**.
+- Datos en JetBrains Mono, mayúsculas, interletrado .18em (`01 — QUÉ ES`,
+  `ESTACIÓN 1 DE 6`, `28–29 NOV 2026`).
+- **No hacemos:** inventar cifras, prometer premios o fechas sin confirmar.
+  Datos permitidos (sitio del sponsor): 28–29 NOV 2026 a confirmar,
+  Quebrada de Humahuaca, 70 cupos, 48h.
 
 ## Color
 
-| Token | Hex | Uso |
+Monocromo estricto. Sin color de acento: la señal es el blanco.
+
+| Token | Valor | Uso |
 | --- | --- | --- |
-| `--solar` | `#FF5A1F` | Naranja de marca: botones, barras `//`, franja del tren, palabras destacadas. Nunca para texto corrido sobre fondo claro. |
-| `--sunset` | `#FF8A4C` | Hover del naranja, avisos, el sol. |
-| `--ink` | `#0F1218` | Tinta: superficies oscuras, texto sobre hueso. |
-| `--night` | `#17233A` | Noche andina: cielos y fondos de sección. |
-| `--ground` | `#0B0E13` | Fondo de página. |
-| `--raised` | `#151A23` | Paneles y tarjetas sobre el fondo. |
-| `--bone` | `#F4F0EA` | Hueso: texto principal sobre oscuro, fondo de pósters y del ticket. |
-| `--muted` | `#A9A49C` | Texto secundario y labels. |
-| `--line` | `#2A2F3A` | Divisores finos entre datos. |
+| `--ground` | `#000` | Fondo de página. |
+| `--raised` / `--ink` | `#0a0a0a` | Paneles, tarjetas, texto sobre blanco. |
+| `--bone` | `#fff` | Texto principal, acento único, botón primario. |
+| `--muted` | `#fff9` (60%) | Texto secundario, labels. |
+| `--muted2` | `#fff6` (40%) | Terciario, énfasis atenuado en títulos. |
+| `--line` | `#ffffff1a` (10%) | Divisores. |
+| `--line2` | `#fff3` (20%) | Bordes de tarjetas y chips. |
+| `--acc` | `#fff` | Ex-`--solar`: la antigua marca naranja ahora es blanca. |
 
-**Cielo** (degradé vertical, de arriba hacia abajo): `#03050B` → `#0A1122` → `#17233A` → `#5A2C2A` → `#C9502A` → `#FF8A4C`.
+**Cielo** (degradé vertical, noche fría): `#010204` → `#060b16` → `#0d1526` → `#141d2e` → `#1c2534` → `#24303f`.
 
-**Paisaje:** roca de quebrada `#6B3A2C`, cerro medio `#3B2A27`, cardón `#40573A`, pared de adobe encalada `#EFE6D8`, teja `#B4553A`.
-
-**Proporción:** dominan el oscuro y el hueso; el naranja es la señal y ocupa poco espacio.
+**Paisaje real (3D):** roca de quebrada, cardones, paredes encaladas y tejas
+conservan sus colores naturales: son territorio, no interfaz.
 
 ## Tipografía
 
 | Rol | Familia | Cómo se usa |
 | --- | --- | --- |
-| Display | **Saira** 900 itálica | Wordmark *HACKATHON* y títulos de sección, en mayúsculas, interletrado −0.02 a −0.035em, interlineado 0.86–0.92. |
-| Texto | **Figtree** 400–800 | Párrafos. Los kickers (*SOLAR TRAIN*, *A TRAVELLING EXPERIENCE*) van en 700–800, mayúsculas, interletrado 0.3–0.42em. |
-| Datos | **JetBrains Mono** 500–700 | Cartel del andén, coordenadas, altitudes, numeración (TS·01) y etiquetas de cámara. |
+| Display | **Space Grotesk** 600/700 | Títulos en mixed case, `letter-spacing:-.02em`, `line-height:1.05`. Sin itálica ni all-caps. |
+| Texto | **Inter** 400/500 | Párrafos y botones. |
+| Datos | **JetBrains Mono** 400/500 | Índices, eyebrows, cartel del andén, coordenadas, `uppercase`, `.18em`. |
 
-Todas salen de Google Fonts. Escala de la landing: wordmark 46–124px, título de sección 36–72px, titular 26–42px, cuerpo 16–19px, label 11–13px.
+Escala: hero `clamp(44px,7.2vw,104px)`, secciones `clamp(32px,4vw,48px)`,
+cuerpo 16–19px, labels 10.5–12px.
 
 ## Formas y gráfica
 
-- **Barras `///`:** el gesto de la marca. En naranja y en diagonal, sueltas o en grupos de tres.
-- **Esquirlas:** paralelogramos naranjas inclinados unos 24° que se salen del borde (ver la tarjeta de cierre).
-- **El sol:** disco naranja bajo, apenas sobre los cerros.
-- **El planeta:** esfera oscura con creciente iluminado, anillo hueso y un fino anillo naranja.
-- **Puntillado (halftone):** trama de puntos sutil en el cielo, al estilo póster serigrafiado.
-- **Interfaz de misión:** esquinas de encuadre, una mira, etiquetas tipo `CAM 03 · LATERAL BAJA`.
-- **Bordes:** casi rectos. Radio de 4px en botones (como un boleto) y 10px en tarjetas, carteles y ticket.
-- **Espaciado:** múltiplos de 8, con 8, 16, 32 y 64px como pasos principales.
-- **No hacemos:** degradés violeta y azul, emojis como íconos, tarjetas con borde de color a un costado, ni nada que no exista en Jujuy (pirámides, palmeras, desiertos de dunas).
-
-## Iconografía
-
-Íconos de línea de 1.5px en `--solar`: rayo (energía solar), cerros (lugares reales), personas (construir juntos), calendario, pin de ubicación.
+- **Radios:** 0 en botones, 2 en chips/ticket, 8 en tarjetas.
+- **Botones:** 56px de alto, padding 0 28px, Inter mayúsculas `.04em`.
+  Primario: fondo blanco, texto negro, sin borde. Secundario: transparente,
+  texto blanco, borde `#fff3`. Flecha `→` en CTAs, `↗` para externos.
+- **Esquirlas:** paralelogramos inclinados 24°, ahora en blanco a 5–8% de opacidad.
+- **El sol/luna:** disco pálido `#f0f2f6` bajo los cerros, con halo frío.
+- **El planeta:** esfera gris oscuro, anillo blanco tenue.
+- **Puntillado (halftone):** trama de puntos blancos sutiles en el cielo.
+- **Interfaz de misión:** esquinas de encuadre, mira, `CAM 03 · LATERAL BAJA`.
+- **Easing:** `cubic-bezier(.16,1,.3,1)`; duraciones .16s/.32s/.9s.
+- **No hacemos:** ningún color que no sea escala de grises en la interfaz,
+  degradés violeta, ni nada que no exista en Jujuy.
 
 ## Componentes de la landing
 
-- **Botón principal:** fondo `--solar`, texto `--ink` en Figtree 800 en mayúsculas con interletrado 0.16em, flecha `→`, pulso suave y un brillo al pasar el mouse.
-- **Cartel del andén:** panel oscuro translúcido con filas clave/valor en mono. Muestra el estado en vivo: llegando, en andén, en viaje, salto a la órbita.
-- **Tarjeta de parada:** `Parada N · Estación`, título en display con una palabra en naranja, un párrafo y una lista de datos en mono.
-- **Ticket:** fondo hueso, girado 4°, filas con línea punteada (pasajero, tramo, tracción).
-- **Franja animada:** banda naranja inclinada −2° con frases en display separadas por `//`.
-- **Recorrido:** línea de vías con las estaciones Volcán → Tumbaya → Purmamarca → Maimará → Tilcara → Uquía → Humahuaca, con sus altitudes aproximadas.
+- **Topbar / footer:** wordmark oficial SpaceX (PNG blanco, ~24px), sin recrear.
+- **Botón principal:** blanco sobre negro, flecha `→`, radio 0.
+- **Cartel del andén:** panel negro translúcido, filas clave/valor en mono.
+- **Tarjeta de parada:** `Parada N · Estación`, título Grotesk con una frase atenuada.
+- **Ticket:** fondo blanco, girado 4°, filas con línea punteada.
+- **Franja animada:** banda blanca inclinada −2°, texto negro separado por `//`.
+- **Recorrido:** mapa SVG monocromo con geografía real OSM (Volcán → Tilcara),
+  card flotante de estación, chips, luz blanca recorriendo el trazado.
 
 ## Escena 3D
 
-- **Tren:** blanco, con franja y esquirla naranjas, ventanas oscuras y paneles solares en el techo.
-- **Entorno:** cerros low-poly, cardones, rocas, postes kilométricos, un andén y un pueblito con campanario.
-- **Cielo:** estrellas, planeta con anillos, luna, un cohete genérico con su estela y, al final, el salto a la velocidad de la luz.
-- **Vistas:** cinco ángulos de cámara ligados al scroll (andén, cenital, lateral baja, frontal y aérea) y una sexta que mira al cielo.
+- **Tren:** blanco con franja grafito `#111318` en silueta de sierra, ventanas
+  oscuras, paneles solares en el techo, chevrons negros en el quitanieves.
+- **Entorno:** cerros, cardones, rocas, postes, andén y pueblito con campanario.
+- **Cielo:** noche fría y desaturada — negro profundo con estrellas, planeta
+  gris con anillos blancos, luna, cohete genérico, salto a la velocidad de la luz.
+- **Vistas:** cinco ángulos ligados al scroll + una mirada al cielo.
 
 ## Marcas de terceros
 
-El estilo espacial es épico y genérico. No usamos elementos propios de franquicias, como logos, personajes, naves o el texto inclinado de apertura. Los logos de sponsors van solo con su confirmación y en el archivo oficial que nos manden.
+**SpaceX / SpaceXAI es sponsor confirmado.** El wordmark se usa únicamente desde
+su archivo oficial (`public/brand/wordmark-white.png`): no se recolorea, no se
+deforma, no se recrea en SVG ni en texto. Fuera del wordmark, no se usan otros
+activos, naves ni nombres de productos de terceros.

@@ -50,14 +50,14 @@ if (svgMap && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
   g.setAttribute("class", "traveler");
   const halo = document.createElementNS(NS, "circle");
   halo.setAttribute("r", "9");
-  halo.setAttribute("fill", "#ff5a1f");
-  halo.setAttribute("opacity", ".35");
+  halo.setAttribute("fill", "#ffffff");
+  halo.setAttribute("opacity", ".28");
   const dot = document.createElementNS(NS, "circle");
   dot.setAttribute("r", "3.5");
-  dot.setAttribute("fill", "#ffd9c4");
+  dot.setAttribute("fill", "#ffffff");
   const tail = document.createElementNS(NS, "circle");
   tail.setAttribute("r", "2");
-  tail.setAttribute("fill", "#ff8a4c");
+  tail.setAttribute("fill", "#bfbfbf");
   tail.setAttribute("opacity", ".7");
   const move = document.createElementNS(NS, "animateMotion");
   move.setAttribute("dur", "9s");
