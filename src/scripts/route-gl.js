@@ -35,8 +35,8 @@ void main(){
   vec3 col = mix(vec3(0.043, 0.055, 0.075), vec3(0.050, 0.075, 0.145), smoothstep(0.0, 0.75, uv.y));
   vec2 sun = vec2(0.78 * aspect, 0.55);
   float dSun = distance(vec2(uv.x * aspect, uv.y), sun);
-  col += vec3(0.55, 0.20, 0.10) * exp(-dSun * 6.0) * 0.14;
-  col += vec3(1.0, 0.55, 0.28) * exp(-dSun * 26.0) * 0.20;
+  col += vec3(0.30, 0.36, 0.48) * exp(-dSun * 6.0) * 0.14;
+  col += vec3(0.75, 0.82, 0.95) * exp(-dSun * 26.0) * 0.18;
   vec2 sg = uv * vec2(aspect, 1.0) * 150.0;
   float sH = hash(floor(sg.x) * 61.7 + floor(sg.y) * 113.1);
   float star = (1.0 - smoothstep(0.03, 0.12, length(fract(sg) - 0.5))) * step(0.982, sH);
